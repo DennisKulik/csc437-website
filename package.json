@@ -1,0 +1,22 @@
+{
+  "name": "csc437-website",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/DennisKulik/csc437-website.git"
+  },
+  "author": "Dennis Kulik",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/DennisKulik/csc437-website/issues"
+  },
+  "homepage": "https://github.com/DennisKulik/csc437-website#readme",
+  "description": "",
+  "workspaces": [
+    "packages/*"
+  ]
+}
