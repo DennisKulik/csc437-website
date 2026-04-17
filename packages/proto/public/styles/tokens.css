@@ -1,0 +1,28 @@
+/* Main Colors */
+:root {
+    --color-background: #faf9f9;
+    --color-primary: #89b0ae;
+    --color-secondary: #bee3db;
+    --color-accent-dark: #555b6e;
+    --color-accent-light: #ffd6ba;
+}
+
+/* Color Options */
+:root {
+    --text-primary: var(--color-rich-mahogany);
+    --text-secondary: var(--color-brown-red);
+    
+    /* Warm Soft */
+    --color-peach-fuzz: #ffcdb2;
+    --color-powder-blush: #ffb4a2;
+    --color-cotton-candy: #e5989b;
+    --color-dusty-rose: #b5838d;
+    --color-dim-grey: #6d6875;
+
+    /* Warm Hard */
+    --color-dark-mahogany: #250902;
+    --color-rich-mahogany: #38040e;
+    --color-black-cherry: #640d14;
+    --color-dark-wine: #800e13;
+    --color-brown-red: #ad2831;
+}

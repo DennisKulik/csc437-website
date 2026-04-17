@@ -1,0 +1,31 @@
+body {
+    background-color: var(--color-background);
+}
+
+/* Text */
+h1 {
+    color: var(--text-primary)
+}
+
+p {
+    color: var(--text-primary);
+}
+
+dt {
+    color: var(--text-primary);
+}
+
+a {
+    color: var(--color-black-cherry);
+}
+
+a:visited {
+    color: var(--color-dark-wine);
+}
+
+/* Layout */
+
+.header-holder {
+    background-color: var(--color-primary);
+    
+}
