@@ -1,10 +1,18 @@
 body {
     background-color: var(--color-background);
+    font-family: "Josefin Slab", serif;
+    font-weight: 400;
+    font-size: 20px;
+    font-style: normal;
 }
 
 /* Text */
 h1 {
-    color: var(--text-primary)
+    color: var(--text-primary);
+    font-family: "Almendra", sans-serif;
+    font-weight: 700;
+    font-size: 40px;
+    font-style: normal;
 }
 
 p {
@@ -27,5 +35,14 @@ a:visited {
 
 .header-holder {
     background-color: var(--color-primary);
-    
+
+}
+
+/* Icons */
+svg.icon {
+    display: inline;
+    height: 2em;
+    width: 2em;
+    vertical-align: middle;
+    fill: currentColor;
 }
