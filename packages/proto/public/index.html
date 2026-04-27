@@ -7,52 +7,80 @@
         <link rel="stylesheet" href="/styles/reset.css"/>
         <link rel="stylesheet" href="/styles/tokens.css"/>
         <link rel="stylesheet" href="/styles/page.css"/>
+        <link rel="stylesheet" href="styles/index.css"/>
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link href="https://fonts.googleapis.com/css2?family=Almendra:ital,wght@0,400;0,700;1,400;1,700&family=Josefin+Slab:ital,wght@0,100..700;1,100..700&display=swap" rel="stylesheet">
+        <!-- Favicon -->
+        <link rel="apple-touch-icon" sizes="180x180" href="/icons/favicon/apple-touch-icon.png">
+        <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon/favicon-32x32.png">
+        <link rel="icon" type="image/png" sizes="16x16" href="/icons/favicon/favicon-16x16.png">
+        <link rel="manifest" href="/icons/favicon/site.webmanifest">
     </head>
     <body>
-        <div class="header-holder">
-            <h1>Planning Website</h1>
+        <div class="page">
+            <div class="header">
+                <div class="header-left">
+                    <svg class="icon-logo">
+                        <use href="icons/planning.svg#icon-spiral-main"/>
+                    </svg>
+                    <h1>Momentum</h1>
+                </div>
+                <div class="header-right">
+                    <a href="index.html">Home</a>
+                    <a href="" class="disabled">About</a>
+                    <a href="" class="disabled">Contact</a>
+                    <svg class="icon-logo">
+                        <use href="icons/planning.svg#icon-user-profile"/>
+                    </svg>
+                </div>
+            </div>
+            <p>This is a planning and organization website</p>
+            <div class="task-box">
+                <h2>Tasks</h2>
+                <ul class="task-list">
+                    <li class="task-tile"><a href="task.html">Build a website</a></li>
+                    <li class="task-tile"><a href="task2.html">Add calendar to user page</a></li>
+                </ul>
+            </div>
+            <dl>
+                <dt>
+                    <svg class="icon">
+                        <use href="icons/planning.svg#icon-bulb"/>
+                    </svg>
+                    User page
+                </dt>
+                <dd><a href="user.html">Dennis Kulik</a></dd>
+                <dt>
+                    <svg class="icon">
+                        <use href="icons/planning.svg#icon-calendar"/>
+                    </svg>
+                    Event page
+                </dt>
+                <dd><a href="event.html">Big Bonfire</a></dd>
+                <dt>
+                    <svg class="icon">
+                        <use href="icons/planning.svg#icon-checklist"/>
+                    </svg>    
+                    Task page
+                </dt>
+                <dd><a href="task.html">Build a website</a></dd>
+                <dt>
+                    <svg class="icon">
+                        <use href="icons/planning.svg#icon-timeline"/>
+                    </svg>
+                    Habit page
+                </dt>
+                <dd><a href="habit.html">Workout</a></dd>
+                <dt>
+                    <svg class="icon">
+                        <use href="icons/planning.svg#icon-sticky-note"/>                
+                    </svg>    
+                    Category page
+                </dt>
+                <dd><a href="category.html">School</a></dd>
+            </dl>
         </div>
-        <p>This is a planning and organization website</p>
-        <dl>
-            <dt>
-                <svg class="icon">
-                    <use href="icons/planning.svg#icon-bulb"/>
-                </svg>
-                User page
-            </dt>
-            <dd><a href="user.html">Dennis Kulik</a></dd>
-            <dt>
-                <svg class="icon">
-                    <use href="icons/planning.svg#icon-calendar"/>
-                </svg>
-                Event page
-            </dt>
-            <dd><a href="event.html">Big Bonfire</a></dd>
-            <dt>
-                <svg class="icon">
-                    <use href="icons/planning.svg#icon-checklist"/>
-                </svg>    
-                Task page
-            </dt>
-            <dd><a href="task.html">Build a website</a></dd>
-            <dt>
-                <svg class="icon">
-                    <use href="icons/planning.svg#icon-timeline"/>
-                </svg>
-                Habit page
-            </dt>
-            <dd><a href="habit.html">Workout</a></dd>
-            <dt>
-                <svg class="icon">
-                    <use href="icons/planning.svg#icon-sticky-note"/>                
-                </svg>    
-                Category page
-            </dt>
-            <dd><a href="category.html">School</a></dd>
-        </dl>
     </body>
 </html>

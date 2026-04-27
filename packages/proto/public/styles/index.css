@@ -1,0 +1,33 @@
+.task-box {
+    grid-column: start / span 3;
+    width: auto;
+
+    display: flex;
+    flex-direction: column;
+    /* grid-template-columns: repeat(3, 1fr); This would create 3 equal columns inside task-box */
+    /* grid-gap: 20px; This specifies the distance between the columns/rows inside task-box */
+
+    margin: 20px; /* Space around the task-box */
+    padding: 20px; /* Space inside the task-box */
+    border-radius: 10px; /* This rounds the corners */ 
+
+    background-color: var(--color-primary);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.task-list {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    
+    gap: 12px;
+}
+
+.task-tile {
+    background-color: var(--color-secondary);
+    padding: 12px;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}

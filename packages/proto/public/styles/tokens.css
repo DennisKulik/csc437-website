@@ -26,3 +26,10 @@
     --color-dark-wine: #800e13;
     --color-brown-red: #ad2831;
 }
+
+/* Padding */
+:root {
+    --padding-small: 0.5rem;
+    --padding-medium: 1rem;
+    --padding-large: 1.5rem;
+}
