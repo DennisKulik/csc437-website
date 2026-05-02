@@ -1,0 +1,95 @@
+
+.user-info {
+    /* I will put user stats in this container. I do not know what the stats are yet */
+    grid-column: start / span 6;
+    width: auto;
+
+    display: flex;
+    flex-direction: column;
+
+    margin: var(--padding-small); /* Space around the task-box */
+    padding: var(--padding-standard); /* Space inside the task-box */
+    padding-top: var(--padding-small);
+    background-color: var(--color-secondary);
+}
+
+.user-info-container {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--padding-small);
+}
+
+.user-info h2 {
+    color: var(--text-primary);
+    font-family: "Almendra", sans-serif;
+    font-weight: 700;
+    font-size: 30px;
+    font-style: normal;
+    border-bottom: 2px solid var(--color-primary);
+}
+
+.user-info h3 {
+    color: var(--text-primary);
+    font-family: "Josefin Slab", serif;
+    font-weight: 700;
+    font-size: 20px;
+    font-style: normal;
+}
+
+.user-info label {
+    color: var(--text-primary);
+    font-family: "Josefin Slab", serif;
+    font-weight: 400;
+    font-size: 20px;
+    font-style: normal;
+
+}
+
+.user-section {
+    display: grid;
+    gap: var(--padding-small);
+    margin: var(--padding-small);
+}
+
+.field {
+    display: grid;
+    grid-template-columns: 140px 1fr;
+    align-items: center;
+    gap: var(--padding-small);
+}
+
+@media (max-width: 900px) {
+    .user-info-container {
+        grid-template-columns: 1fr;        
+    }
+
+    .field {
+        grid-template-columns: 1fr;
+    }
+}
+
+
+.profile-picture-holder {
+    grid-column: 7 / span 2;
+    margin: var(--padding-small);
+    overflow: hidden;
+    aspect-ratio: 1 / 1;
+}
+
+.profile-picture-holder img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+
+
+.event-container {
+    margin: 20px;
+    padding: 20px;
+    background-color: var(--color-secondary);
+
+    grid-column: start / span 3;
+    width: auto;
+}

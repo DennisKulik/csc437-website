@@ -39,11 +39,11 @@ dd {
 /* Links */
 
 a {
-    color: var(--color-black-cherry);
+    color: var(--text-link);
 }
 
 a:visited {
-    color: var(--color-dark-wine);
+    color: var(--text-link-visited);
 }
 
 .disabled {
@@ -67,13 +67,24 @@ a:visited {
     display: flex;
     align-items: center;
     gap: var(--padding-small);
-    
+}
+
+.header-left h1 {
+    font-size: 50px;
 }
 
 .header-right {
     display: flex;
     align-items: center;
     gap: var(--padding-small);
+}
+
+.header-right a {
+    font-size: 24px;
+}
+
+.header-right label {
+    color: var(--text-primary);
 }
 
 /* Icons */
@@ -92,3 +103,17 @@ svg.icon-logo {
     width: 3em;
     fill: var(--text-primary);
 }
+
+/* Containers */
+.border-small {
+    border: var(--padding-small) solid var(--color-primary);
+    border-radius: var(--padding-small);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.border-standard {
+    border: var(--padding-small) solid var(--color-primary);
+    border-radius: var(--padding-standard);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+

@@ -28,6 +28,10 @@
                     <h1>Momentum</h1>
                 </div>
                 <div class="header-right">
+                    <label id="dark-mode-holder">
+                        <input id="dark-mode-toggle" type="checkbox" autocomplete="off"/>
+                        Dark Mode
+                    </label>
                     <a href="index.html">Home</a>
                     <a href="" class="disabled">About</a>
                     <a href="" class="disabled">Contact</a>
@@ -43,10 +47,18 @@
                     <span class="section-meta">Future Add Task Button</span>
                 </div>
                 <ul class="task-list">
-                    <li class="task-tile"><a href="task.html">Build a website</a></li>
-                    <li class="task-tile"><a href="task2.html">Add calendar to user page</a></li>
-                    <li class="task-tile"><a class="disabled" href="">Add timeline to front page</a></li>
-                    <li class="task-tile"><a class="disabled" href="">Add events to timeline</a></li>
+                    <li class="task-tile">
+                        <a href="task.html">Build a website</a>
+                    </li>
+                    <li class="task-tile">
+                        <a href="task2.html">Add calendar to user page</a>
+                    </li>
+                    <li class="task-tile">
+                        <a class="disabled" href="">Add timeline to front page</a>
+                    </li>
+                    <li class="task-tile">
+                        <a class="disabled" href="">Add events to timeline</a>
+                    </li>
                 </ul>
             </div>
             <div class="timeline-holder">
@@ -88,42 +100,43 @@
             </div>
             <dl>
                 <dt>This is just old navigation stuff</dt>
+                <dd><a href="user.html">Dennis Kulik</a></dd>
                 <dt>
                     <svg class="icon">
                         <use href="icons/planning.svg#icon-bulb"/>
                     </svg>
                     User page
                 </dt>
-                <dd><a href="user.html">Dennis Kulik</a></dd>
+                <dd><a href="event.html">Big Bonfire</a></dd>
                 <dt>
                     <svg class="icon">
                         <use href="icons/planning.svg#icon-calendar"/>
                     </svg>
                     Event page
                 </dt>
-                <dd><a href="event.html">Big Bonfire</a></dd>
+                <dd><a href="task.html">Build a website</a></dd>
                 <dt>
                     <svg class="icon">
                         <use href="icons/planning.svg#icon-checklist"/>
                     </svg>    
                     Task page
                 </dt>
-                <dd><a href="task.html">Build a website</a></dd>
+                <dd><a href="habit.html">Workout</a></dd>
                 <dt>
                     <svg class="icon">
                         <use href="icons/planning.svg#icon-timeline"/>
                     </svg>
                     Habit page
                 </dt>
-                <dd><a href="habit.html">Workout</a></dd>
+                <dd><a href="category.html">School</a></dd>
                 <dt>
                     <svg class="icon">
                         <use href="icons/planning.svg#icon-sticky-note"/>                
                     </svg>    
                     Category page
                 </dt>
-                <dd><a href="category.html">School</a></dd>
             </dl>
         </div>
+        <script src="/javascript/main.js"></script>
     </body>
 </html>

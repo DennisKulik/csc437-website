@@ -6,6 +6,7 @@
         <link rel="stylesheet" href="/styles/reset.css"/>
         <link rel="stylesheet" href="/styles/tokens.css"/>
         <link rel="stylesheet" href="/styles/page.css"/>
+        <link rel="stylesheet" href="/styles/user.css"/>
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -17,31 +18,101 @@
         <link rel="manifest" href="/icons/favicon/site.webmanifest">
     </head>
     <body>
-        <div class="header">
-            <div class="header-left">
-                <svg class="icon-logo">
-                    <use href="icons/planning.svg#icon-spiral-main"/>
-                </svg>
-                <h1>Momentum</h1>
+        <div class="page">
+            <div class="header">
+                <div class="header-left">
+                    <svg class="icon-logo">
+                        <use href="icons/planning.svg#icon-spiral-main"/>
+                    </svg>
+                    <h1>Momentum</h1>
+                </div>
+                <div class="header-right">
+                    <label id="dark-mode-holder">
+                        <input id="dark-mode-toggle" type="checkbox" autocomplete="off"/>
+                        Dark Mode
+                    </label>
+                    <a href="index.html">Home</a>
+                    <a href="" class="disabled">About</a>
+                    <a href="" class="disabled">Contact</a>
+                    <svg class="icon-logo">
+                        <use href="icons/planning.svg#icon-user-profile"/>
+                    </svg>
+                </div>
             </div>
-            <div class="header-right">
-                <a href="index.html">Home</a>
-                <a href="" class="disabled">About</a>
-                <a href="" class="disabled">Contact</a>
-                <svg class="icon-logo">
-                    <use href="icons/planning.svg#icon-user-profile"/>
-                </svg>
+            <div class="user-info border-small">
+                <h2>User Info</h2>
+                <div class="user-info-container">
+                    <div class="user-section">
+                        <h3>Account</h3>
+
+                        <div class="field">
+                            <label for="display-name">Display Name:</label>
+                            <input id="display-name" type="text" name="display-name" value="Current Name">
+                        </div>
+
+                        <div class="field">
+                            <label for="username">Username:</label>
+                            <input id="username" type="text" name="username" value="Current Username">
+                        </div>
+
+                        <div class="field">
+                            <label for="profile-picture">Change Profile Picture:</label>
+                            <input id="profile-picture" type="file" name="profile-picture">
+                        </div>
+                    </div>
+
+                    <!-- Password Section -->
+                    <div class="user-section">
+                        <h3>Security</h3>
+
+                        <div class="field">
+                            <label for="current-password">Current Password:</label>
+                            <input id="current-password" type="password" name="current-password">
+                        </div>
+
+                        <div class="field">
+                            <label for="new-password">New Password:</label>
+                            <input id="new-password" type="password" name="new-password">
+                        </div>
+
+                        <div class="field">
+                            <label for="confirm-password">Confirm New Password:</label>
+                            <input id="confirm-password" type="password" name="confirm-password">
+                        </div>
+
+                        <div class="field">
+                            <span></span>
+                            <button type="button">Change Password</button>
+                        </div>
+                    </div>
+
+                    <!-- Stats Section -->
+                    <div class="user-section">
+                        <h3>Stats</h3>
+
+                        <p>Tasks Completed This Week: 12</p>
+                        <p>Current Streak: 5 days</p>
+                        <p>Overdue Tasks: 2</p>
+                    </div>
+                </div>
             </div>
+
+            <div class="profile-picture-holder border-small">
+                <img src="/images/default-profile.jpg">
+            </div>
+            <div class="event-container border-small">
+                <p> contents </p>
+            </div>
+            <dl>
+                <dt>User's Tasks</dt>
+                <dd><a href="task.html">Build a website</a></dd>
+                <dd><a href="task2.html">Add calendar to user page</a></dd>
+                <dt>User's Events</dt>
+                <dd><a href="event.html">Big Bonfire</a></dd>
+                <dt>User's Habits</dt>
+                <dd><a href="habit.html">Workout</a></dd>
+            </dl>
         </div>
-        <dl>
-            <dt>User's Tasks</dt>
-            <dd><a href="task.html">Build a website</a></dd>
-            <dd><a href="task2.html">Add calendar to user page</a></dd>
-            <dt>User's Events</dt>
-            <dd><a href="event.html">Big Bonfire</a></dd>
-            <dt>User's Habits</dt>
-            <dd><a href="habit.html">Workout</a></dd>
-        </dl>
-        <a><a href="index.html">Return to home page</a>
+        <script src="/javascript/main.js"></script>
     </body>
 </html>

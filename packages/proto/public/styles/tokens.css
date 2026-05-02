@@ -1,35 +1,84 @@
 /* Main Colors */
 :root {
-    --color-background: #faf9f9;
-    --color-primary: #89b0ae;
-    --color-secondary: #bee3db;
-    --color-accent-dark: #555b6e;
-    --color-accent-light: #ffd6ba;
+    --color-background:   #faf9f9;    /* Off White */
+    --color-primary:      #89b0ae;       /* Teal */
+    --color-secondary:    #bee3db;     /* Light Teal */
+    --color-accent-dark:  #555b6e;   /* Dark Grey */
+    --color-accent-light: #ffd6ba;  /* Light Orange */
+
+    --text-primary: var(--color-rich-mahogany);
+    --text-secondary: var(--color-brown-red);
+    --text-link: var(--color-black-cherry);
+    --text-link-visited: var(--color-dark-wine);
+
+    --color-background: var(--solarized-base2);
+    --color-primary: var(--solarized-base1);
+    --color-secondary: var(--solarized-base3);
+    --color-accent-dark: var(--solarized-base01);
+    --color-accent-light: var(--solarized-base0);
+
+    --text-primary: var(--solarized-base02);
+    --text-secondary: var(--solarized-base01);
+
 }
 
 /* Color Options */
-:root {
-    --text-primary: var(--color-rich-mahogany);
-    --text-secondary: var(--color-brown-red);
-    
+:root {    
     /* Warm Soft */
-    --color-peach-fuzz: #ffcdb2;
+    --color-peach-fuzz:   #ffcdb2;
     --color-powder-blush: #ffb4a2;
     --color-cotton-candy: #e5989b;
-    --color-dusty-rose: #b5838d;
-    --color-dim-grey: #6d6875;
+    --color-dusty-rose:   #b5838d;
+    --color-dim-grey:     #6d6875;
 
     /* Warm Hard */
     --color-dark-mahogany: #250902;
     --color-rich-mahogany: #38040e;
-    --color-black-cherry: #640d14;
-    --color-dark-wine: #800e13;
-    --color-brown-red: #ad2831;
+    --color-black-cherry:  #640d14;
+    --color-dark-wine:     #800e13;
+    --color-brown-red:     #ad2831;
+}
+
+/* Solarized Colors */
+:root {
+  --solarized-base03: #002b36;
+  --solarized-base02: #073642;
+  --solarized-base01: #586e75;
+  --solarized-base00: #657b83;
+  --solarized-base0:  #839496;
+  --solarized-base1:  #93a1a1;
+  --solarized-base2:  #eee8d5;
+  --solarized-base3:  #fdf6e3;
+  
+  --solarized-yellow: #b58900;
+  --solarized-orange: #cb4b16;
+  --solarized-red:    #dc322f;
+  --solarized-magenta:#d33682;
+  --solarized-violet: #6c71c4;
+  --solarized-blue:   #268bd2;
+  --solarized-cyan:   #2aa198;
+  --solarized-green:  #859900;
 }
 
 /* Padding */
 :root {
-    --padding-small: 0.5rem;
-    --padding-medium: 1rem;
-    --padding-large: 1.5rem;
+    --padding-mini: 0.5rem;        /* 8px */
+    --padding-small: 0.75rem;     /* 12px */
+    --padding-medium: 1rem;         /* 16px */
+    --padding-standard: 1.25rem;    /* 20px */
+    --padding-large: 1.5rem;        /* 24px */
+    --padding-jumbo: 2rem;          /* 32px */
+}
+
+body.dark-mode {
+    --color-background: var(--solarized-base01);
+    --color-primary: var(--solarized-base02);
+    --color-secondary: var(--solarized-base00);
+    --color-accent-dark: var(--solarized-base1);
+    --color-accent-light: var(--solarized-base00);
+
+    --text-primary: var(--solarized-base2);
+    --text-secondary: var(--solarized-base1);
+    --text-link: var(--solarized-red);
+    --text-link-visited: var(--solarized-orange);
 }
