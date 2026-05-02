@@ -126,6 +126,10 @@
 
 }
 
+.event-card-header h3 {
+    color: var(--text-primary);
+}
+
 .event-card a {
     display: block;
     color: var(--text-secondary);
