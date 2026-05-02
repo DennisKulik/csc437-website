@@ -14,11 +14,12 @@
     --color-background: var(--solarized-base2);
     --color-primary: var(--solarized-base1);
     --color-secondary: var(--solarized-base3);
+    --color-tertiary: var(--solarized-base0);
     --color-accent-dark: var(--solarized-base01);
     --color-accent-light: var(--solarized-base0);
 
     --text-primary: var(--solarized-base02);
-    --text-secondary: var(--solarized-base01);
+    --text-secondary: var(--solarized-base2);
 
 }
 
@@ -62,8 +63,8 @@
 
 /* Padding */
 :root {
-    --padding-mini: 0.5rem;        /* 8px */
-    --padding-small: 0.75rem;     /* 12px */
+    --padding-mini: 0.5rem;         /*  8px */
+    --padding-small: 0.75rem;       /* 12px */
     --padding-medium: 1rem;         /* 16px */
     --padding-standard: 1.25rem;    /* 20px */
     --padding-large: 1.5rem;        /* 24px */
@@ -72,13 +73,14 @@
 
 body.dark-mode {
     --color-background: var(--solarized-base01);
-    --color-primary: var(--solarized-base02);
+    --color-primary: var(--solarized-base03);
     --color-secondary: var(--solarized-base00);
+    --color-tertiary: var(--solarized-base02);
     --color-accent-dark: var(--solarized-base1);
     --color-accent-light: var(--solarized-base00);
 
-    --text-primary: var(--solarized-base2);
-    --text-secondary: var(--solarized-base1);
+    --text-primary: var(--solarized-base3);
+    --text-secondary: var(--solarized-base2);
     --text-link: var(--solarized-red);
     --text-link-visited: var(--solarized-orange);
 }

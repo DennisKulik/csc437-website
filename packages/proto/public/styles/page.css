@@ -85,6 +85,8 @@ a:visited {
 
 .header-right label {
     color: var(--text-primary);
+    font-size: 22px;
+    font-weight: 500;
 }
 
 /* Icons */
@@ -101,7 +103,8 @@ svg.icon-logo {
     display: inline-block;
     max-height: 3em;
     width: 3em;
-    fill: var(--text-primary);
+    color: var(--text-primary);
+    fill: currentColor;
 }
 
 /* Containers */
@@ -117,3 +120,13 @@ svg.icon-logo {
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
+
+/* Effects */
+.hover-lift {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.hover-lift:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}

@@ -1,0 +1,136 @@
+<div class="timeline-holder">
+    <div class="section-header">
+        <h2>Timeline</h2>
+        <span class="section-meta">Today's Date</span>
+    </div>
+    <div class="timeline-content">
+        <div class="timeline-markers">
+            <div class="time-marker"><span>12:00 AM</span></div>
+            <div class="time-marker"><span>1:00 AM</span></div>
+            <div class="time-marker"><span>2:00 AM</span></div>
+            <div class="time-marker"><span>3:00 AM</span></div>
+            <div class="time-marker"><span>4:00 AM</span></div>
+            <div class="time-marker"><span>5:00 AM</span></div>
+            <div class="time-marker"><span>6:00 AM</span></div>
+            <div class="time-marker"><span>7:00 AM</span></div>
+            <div class="time-marker"><span>8:00 AM</span></div>
+            <div class="time-marker"><span>9:00 AM</span></div>
+            <div class="time-marker"><span>10:00 AM</span></div>
+            <div class="time-marker"><span>11:00 AM</span></div>
+            <div class="time-marker"><span>12:00 PM</span></div>
+            <div class="time-marker"><span>1:00 PM</span></div>
+            <div class="time-marker"><span>2:00 PM</span></div>
+            <div class="time-marker"><span>3:00 PM</span></div>
+            <div class="time-marker"><span>4:00 PM</span></div>
+            <div class="time-marker"><span>5:00 PM</span></div>
+            <div class="time-marker"><span>6:00 PM</span></div>
+            <div class="time-marker"><span>7:00 PM</span></div>
+            <div class="time-marker"><span>8:00 PM</span></div>
+            <div class="time-marker"><span>9:00 PM</span></div>
+            <div class="time-marker"><span>10:00 PM</span></div>
+            <div class="time-marker"><span>11:00 PM</span></div>
+        </div>
+        <div class="timeline-events">
+            <p>Timeline content goes here</p>
+        </div>
+    </div>
+</div>
+
+
+<style>
+    .timeline-holder {
+        grid-column: 4 / span 4;
+        background-color: var(--color-primary);
+        padding: var(--padding-standard);
+        margin: var(--padding-standard);
+        border-radius: var(--padding-small);
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+
+        display: flex;
+        flex-direction: column;
+    }
+
+
+    .timeline-content {
+        display: grid;
+        grid-template-columns: 100px 1fr;
+        gap: 3px;
+    }
+
+    .timeline-markers {
+        background-color: var(--color-secondary);
+        display: flex;
+        flex-direction: column;
+        border-right: 4px solid var(--color-accent-dark);
+    }
+
+    .time-marker {
+        height: 60px;
+        border-top: 2px solid var(--color-accent-dark);
+        border-left: 2px solid var(--color-accent-dark);
+        font-size: 16px;
+        position: relative;
+    }
+
+    .time-marker:after {
+        content: "----";
+        color: transparent;
+        position: absolute;
+        top: 50%;
+        left: 90%;
+        border-top: 2px solid var(--color-accent-dark);
+    }
+
+    .time-marker:before {
+        content: "-----";
+        color: transparent;
+        position: absolute;
+        top: 0%;
+        left: 80%;
+        border-top: 2px solid var(--color-accent-dark);
+    }
+
+    .time-marker:last-child {
+        border-bottom: 3px solid var(--color-accent-dark);
+    }
+
+    .time-marker span {
+        color: var(--text-primary);
+        border-bottom: 1px solid var(--color-accent-dark);
+    }
+
+    .timeline-events {
+        background-color: var(--color-secondary);
+    }
+</style>
+
+
+/* old task-tile */
+<style>
+    .task-tile {
+        background-color: var(--color-secondary);
+        border-radius: var(--padding-mini);
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .task-tile:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    }
+</style>
+
+
+
+/* old event-card */
+<style>
+    .event-card {
+        background-color: var(--color-tertiary);
+        border-radius: var(--padding-mini);
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+    }
+</style>
+ 
