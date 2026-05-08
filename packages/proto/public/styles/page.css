@@ -1,8 +1,23 @@
+/* Page Grid */
 .page {
     display: grid;
-    grid-template-columns: [start] 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr[end]
+    grid-template-columns: [start] repeat(8, 1fr) [end]
 }
 
+/* Responsive Sizing */
+@media (max-width: 1100px) {
+    .page {
+        grid-template-columns: [start] repeat(4, 1fr) [end]
+    }
+}
+
+@media (max-width: 700px) {
+    .page {
+        grid-template-columns: [start] repeat(1, 1fr) [end]
+    }
+}
+
+/* Body */
 body {
     background-color: var(--color-background);
     font-family: "Josefin Slab", serif;

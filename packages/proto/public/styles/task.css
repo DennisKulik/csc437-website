@@ -1,0 +1,5 @@
+.task-holder {
+    background-color: var(--color-secondary);
+    grid-column: 4 / end;
+ 
+}

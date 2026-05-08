@@ -6,6 +6,7 @@
         <link rel="stylesheet" href="/styles/reset.css"/>
         <link rel="stylesheet" href="/styles/tokens.css"/>
         <link rel="stylesheet" href="/styles/page.css"/>
+        <link rel="stylesheet" href="/styles/task.css"/>
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -17,38 +18,43 @@
         <link rel="manifest" href="/icons/favicon/site.webmanifest">
     </head>
     <body>
-        <div class="header">
-            <div class="header-left">
-                <svg class="icon-logo">
-                    <use href="icons/planning.svg#icon-spiral-main"/>
-                </svg>
-                <h1>Momentum</h1>
+        <div class="page">
+            <div class="header">
+                <div class="header-left">
+                    <svg class="icon-logo">
+                        <use href="icons/planning.svg#icon-spiral-main"/>
+                    </svg>
+                    <h1>Momentum</h1>
+                </div>
+                <div class="header-right">
+                    <label id="dark-mode-holder">
+                        <input id="dark-mode-toggle" type="checkbox" autocomplete="off"/>
+                        Dark Mode
+                    </label>
+                    <a href="index.html">Home</a>
+                    <a href="" class="disabled">About</a>
+                    <a href="" class="disabled">Contact</a>
+                    <svg class="icon-logo">
+                        <use href="icons/planning.svg#icon-user-profile"/>
+                    </svg>
+                </div>
             </div>
-            <div class="header-right">
-                <label id="dark-mode-holder">
-                    <input id="dark-mode-toggle" type="checkbox" autocomplete="off"/>
-                    Dark Mode
-                </label>
-                <a href="index.html">Home</a>
-                <a href="" class="disabled">About</a>
-                <a href="" class="disabled">Contact</a>
-                <svg class="icon-logo">
-                    <use href="icons/planning.svg#icon-user-profile"/>
-                </svg>
+            <div class="task-holder border-small">
+                Task Contents
             </div>
+            <p>Category: <a href="category.html">School</a></p>
+            <p>Description: Create the basic html pages for each concept we are modeling</p>
+            <p>Due Date: 4/6/2026</p>
+            <p>Priority: High</p>
+            <p>Completion status: In Progress</p>
+            <p>Subtasks:</p>
+            <ul>
+                <li>Create event page</li>
+                <li>Create category page</li>
+                <li>Create habit page</li>
+            </ul>
+            <a><a href="index.html">Return to home page</a> 
         </div>
-        <p>Category: <a href="category.html">School</a></p>
-        <p>Description: Create the basic html pages for each concept we are modeling</p>
-        <p>Due Date: 4/6/2026</p>
-        <p>Priority: High</p>
-        <p>Completion status: In Progress</p>
-        <p>Subtasks:</p>
-        <ul>
-            <li>Create event page</li>
-            <li>Create category page</li>
-            <li>Create habit page</li>
-        </ul>
-        <a><a href="index.html">Return to home page</a>
         <script src="/javascript/main.js"></script>
     </body>
 </html>
