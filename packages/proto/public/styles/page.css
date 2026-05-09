@@ -20,7 +20,7 @@
 /* Body */
 body {
     background-color: var(--color-background);
-    font-family: "Josefin Slab", serif;
+    font-family: var(--font-secondary);
     font-weight: 400;
     font-size: 20px;
     font-style: normal;
@@ -30,7 +30,7 @@ body {
 
 h1 {
     color: var(--text-primary);
-    font-family: "Almendra", sans-serif;
+    font-family: var(--font-primary);
     font-weight: 700;
     font-size: 40px;
     font-style: normal;
@@ -73,7 +73,7 @@ a:visited {
     grid-column: start / end;
     display: flex;
     background-color: var(--color-primary);
-    padding: var(--padding-small);
+    padding: var(--padding-mini) var(--padding-small) var(--padding-tiny);
     align-items: center;
     justify-content: space-between;
 }
@@ -108,16 +108,16 @@ a:visited {
 
 svg.icon {
     display: inline;
-    height: 2em;
-    width: 2em;
+    height: 2.5rem;
+    width: 2.5rem;
     vertical-align: middle;
     fill: currentColor;
 }
 
 svg.icon-logo {
     display: inline-block;
-    max-height: 3em;
-    width: 3em;
+    height: 4.5rem;
+    width: 4.5rem;
     color: var(--text-primary);
     fill: currentColor;
 }
@@ -144,4 +144,17 @@ svg.icon-logo {
 .hover-lift:hover {
     transform: translateY(-2px);
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+
+/* General */
+.button {
+    padding: var(--padding-mini);
+    margin: 0 var(--padding-tiny) var(--padding-mini);
+    border-radius: var(--padding-standard);
+    background-color: var(--color-accent-dark);
+    color: var(--text-secondary);
+    font-family: var(--font-primary);
+    font-size: 16px;
+    font-weight: 600;
 }

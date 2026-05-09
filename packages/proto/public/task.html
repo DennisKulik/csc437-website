@@ -6,6 +6,7 @@
         <link rel="stylesheet" href="/styles/reset.css"/>
         <link rel="stylesheet" href="/styles/tokens.css"/>
         <link rel="stylesheet" href="/styles/page.css"/>
+        <link rel="stylesheet" href="/styles/details.css"/>
         <link rel="stylesheet" href="/styles/task.css"/>
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -34,13 +35,41 @@
                     <a href="index.html">Home</a>
                     <a href="" class="disabled">About</a>
                     <a href="" class="disabled">Contact</a>
-                    <svg class="icon-logo">
-                        <use href="icons/planning.svg#icon-user-profile"/>
-                    </svg>
+                    <a href="user.html">
+                        <svg class="icon-logo">
+                            <use href="icons/planning.svg#icon-user-profile"/>
+                        </svg>
+                    </a>
                 </div>
             </div>
-            <div class="task-holder border-small">
-                Task Contents
+            <div class="detail-panel task-detail border-small">
+                <div class="detail-header">
+                    <div class="detail-title-group">
+                        <p class="detail-type">Task</p>
+                        <h2>Build Basic Concept Pages</h2>
+                    </div>
+                    <p class="detail-status">In Progress</p>
+                </div>
+
+                <div class="detail-meta">
+                    <p><strong>Category:</strong> <a href="category.html">School</a></p>
+                    <p><strong>Due Date:</strong> 4/6/2026</p>
+                    <p><strong>Priority:</strong> High</p>
+                </div>
+
+                <div class="detail-section">
+                    <h3>Description</h3>
+                    <p>Create the basic html pages for each concept we are modeling.</p>
+                </div>
+
+                <div class="detail-section">
+                    <h3>Subtasks</h3>
+                    <ul>
+                        <li>Create event page</li>
+                        <li>Create category page</li>
+                        <li>Create habit page</li>
+                    </ul>
+                </div>
             </div>
             <p>Category: <a href="category.html">School</a></p>
             <p>Description: Create the basic html pages for each concept we are modeling</p>

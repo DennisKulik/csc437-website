@@ -21,6 +21,9 @@
     --text-primary: var(--solarized-base02);
     --text-secondary: var(--solarized-base2);
 
+    --font-primary: "Almendra", sans-serif;
+    --font-secondary: "Josefin Slab", serif;
+
 }
 
 /* Color Options */
@@ -63,6 +66,7 @@
 
 /* Padding */
 :root {
+    --padding-tiny: 0.25rem;        /*  4px */
     --padding-mini: 0.5rem;         /*  8px */
     --padding-small: 0.75rem;       /* 12px */
     --padding-medium: 1rem;         /* 16px */

@@ -18,9 +18,21 @@
     gap: var(--padding-small);
 }
 
+@media (max-width: 1000px) {
+    .user-info-container {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+@media (max-width: 700px) {
+    .user-info-container {
+        grid-template-columns: 1fr;
+    }
+}
+
 .user-info h2 {
     color: var(--text-primary);
-    font-family: "Almendra", sans-serif;
+    font-family: var(--font-primary);
     font-weight: 700;
     font-size: 30px;
     font-style: normal;
@@ -29,7 +41,7 @@
 
 .user-info h3 {
     color: var(--text-primary);
-    font-family: "Josefin Slab", serif;
+    font-family: var(--font-secondary);
     font-weight: 700;
     font-size: 20px;
     font-style: normal;
@@ -38,7 +50,7 @@
 
 .user-info label {
     color: var(--text-primary);
-    font-family: "Josefin Slab", serif;
+    font-family: var(--font-secondary);
     font-weight: 400;
     font-size: 20px;
     font-style: normal;
@@ -54,8 +66,6 @@
 }
 
 .user-section h3 {
-    /* min-height: 2.5rem;
-    max-height: 2.5rem; */
     display: flex;
     align-items: end;
 }
@@ -65,6 +75,13 @@
     gap: var(--padding-mini);
     grid-auto-rows: minmax(4.5rem, auto);
 }
+
+.user-section-body.stats-list {
+    gap: var(--padding-standard);
+    grid-auto-rows: max-content;
+    align-content: start;
+}
+
 
 .field {
     display: grid;
@@ -80,6 +97,7 @@
 .stat-row {
     display: grid;
     align-content: start;
+    color: var(--text-primary);
 }
 
 /* Profile Picture */

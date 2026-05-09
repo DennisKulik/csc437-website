@@ -1,5 +1,23 @@
-.task-holder {
-    background-color: var(--color-secondary);
-    grid-column: 4 / end;
- 
+.task-detail {
+  background-color: var(--color-secondary);
+}
+
+.task-detail .detail-status {
+  background-color: var(--color-primary);
+}
+
+.task-detail .detail-meta {
+  background-color: var(--color-primary);
+  padding: var(--padding-small);
+  border-radius: var(--padding-mini);
+}
+
+.task-detail .detail-meta a {
+    font-size: 20px;
+}
+
+.task-detail .detail-section {
+  background-color: var(--color-background);
+  padding: var(--padding-small);
+  border-radius: var(--padding-mini);
 }

@@ -136,6 +136,13 @@
     background-color: var(--color-tertiary);
 }
 
+.event-card a {
+    display: block;
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-weight: 500;
+}
+
 .event-card-header {
     display: flex;
     justify-content: space-between;
@@ -148,14 +155,6 @@
     color: var(--text-primary);
 }
 
-.event-card a {
-    display: block;
-    color: var(--text-secondary);
-    text-decoration: none;
-    font-weight: 500;
-}
-
-
 /* Responsive Sizing */
 @media (max-width: 1100px) {
     .task-box,
@@ -163,11 +162,3 @@
         grid-column: start / end;
     }
 }
-
-/* @media (max-width: 700px) {
-    .task-box,
-    .events-holder {
-        margin: var(--padding-small);
-        padding: var(--padding-small);;
-    }
-} */
