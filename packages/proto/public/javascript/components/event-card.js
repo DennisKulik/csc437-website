@@ -28,7 +28,6 @@ export class MomentumEventCard extends HTMLElement {
                 link.href = newValue;
             }
         }
-
     }
 
     static styles = css`

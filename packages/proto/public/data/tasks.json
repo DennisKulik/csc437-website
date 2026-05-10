@@ -1,12 +1,28 @@
 {
     "tasks": [
         {
-            "name": "Build a Website", 
-            "link": "task.html"
+            "title": "Build a Website", 
+            "href": "task.html"
         },
         {
-            "name": "Add to the Website", 
-            "link": "task2.html"
+            "title": "Add to the Website", 
+            "href": "task2.html"
+        },
+        {
+            "title": "Build a Website", 
+            "href": "task.html"
+        },
+        {
+            "title": "Add to the Website", 
+            "href": "task2.html"
+        },
+        {
+            "title": "Build a Website", 
+            "href": "task.html"
+        },
+        {
+            "title": "Add to the Website", 
+            "href": "task2.html"
         }
     ]
 }

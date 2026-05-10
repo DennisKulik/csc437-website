@@ -94,6 +94,12 @@ export class MomentumEventsHolder extends HTMLElement {
             grid-column: 4 / end;
         }
         
+        @media (max-width: 1100px) {
+            :host {
+                grid-column: start / end;
+            }
+        }
+        
         .events-holder {
             background-color: var(--color-primary);
             padding: var(--padding-standard);
@@ -130,12 +136,5 @@ export class MomentumEventsHolder extends HTMLElement {
             
             gap: var(--padding-small);
         }
-
-        @media (max-width: 1100px) {
-            :host {
-                grid-column: start / end;
-            }
-        }
-
     `;
 }
