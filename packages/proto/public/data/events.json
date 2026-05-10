@@ -1,0 +1,124 @@
+{
+    "week": "This Week",   
+    "weekdays": [
+        {
+            "day": "Monday",
+            "oneTimeEvents": [
+                {
+                    "title": "Big Bonfire",
+                    "href": "event.html",
+                    "disabled": false
+                }
+            ],
+            "recurringEvents": [
+                {
+                    "title": "Web Dev Class",
+                    "href": "",
+                    "disabled": true
+                }
+            ]
+        },
+        {
+            "day": "Tuesday",
+            "oneTimeEvents": [
+                {
+                    "title": "Big Bonfire",
+                    "href": "event.html",
+                    "disabled": false
+                }
+            ],
+            "recurringEvents": [
+                {
+                    "title": "Web Dev Class",
+                    "href": "",
+                    "disabled": true
+                }
+            ]
+        },
+        {
+            "day": "Wednesday",
+            "oneTimeEvents": [
+                {
+                    "title": "Big Bonfire",
+                    "href": "event.html",
+                    "disabled": false
+                }
+            ],
+            "recurringEvents": [
+                {
+                    "title": "Web Dev Class",
+                    "href": "",
+                    "disabled": true
+                }
+            ]
+        },
+        {
+            "day": "Thursday",
+            "oneTimeEvents": [
+                {
+                    "title": "Big Bonfire",
+                    "href": "event.html",
+                    "disabled": false
+                }
+            ],
+            "recurringEvents": [
+                {
+                    "title": "Web Dev Class",
+                    "href": "",
+                    "disabled": true
+                }
+            ]
+        },
+        {
+            "day": "Friday",
+            "oneTimeEvents": [
+                {
+                    "title": "Big Bonfire",
+                    "href": "event.html",
+                    "disabled": false
+                }
+            ],
+            "recurringEvents": [
+                {
+                    "title": "Web Dev Class",
+                    "href": "",
+                    "disabled": true
+                }
+            ]
+        },
+        {
+            "day": "Saturday",
+            "oneTimeEvents": [
+                {
+                    "title": "Big Bonfire",
+                    "href": "event.html",
+                    "disabled": false
+                }
+            ],
+            "recurringEvents": [
+                {
+                    "title": "Web Dev Class",
+                    "href": "",
+                    "disabled": true
+                }
+            ]
+        },
+        {
+            "day": "Sunday",
+            "oneTimeEvents": [
+                {
+                    "title": "Big Bonfire",
+                    "href": "event.html",
+                    "disabled": false
+                }
+            ],
+            "recurringEvents": [
+                {
+                    "title": "Web Dev Class",
+                    "href": "",
+                    "disabled": true
+                }
+            ]
+        }
+    ]
+}
