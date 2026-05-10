@@ -1,33 +1,33 @@
-.task-detail {
+.event-detail {
     background-color: var(--color-secondary);
 }
 
-.task-detail .detail-status {
+.event-detail .detail-status {
     background-color: var(--color-primary);
 }
 
-.task-detail .details {
+.event-detail .details {
     padding: var(--padding-small);
     border-radius: var(--padding-standard);
 }
 
-.task-detail .details a {
+.event-detail .details a {
     font-size: 22px;
     text-shadow: 0 0 1px currentColor;
 }
 
-.task-detail .detail-section {
+.event-detail .detail-section {
     background-color: var(--color-background);
     padding: var(--padding-small);
     border-radius: var(--padding-mini);
 }
 
-.task-detail .detail-badge {
-    background-color: rebeccapurple;
+.event-detail .detail-badge {
+    background-color: var(--color-tertiary);
     position: relative;
 }
 
-.task-detail .detail-badge .color-picker {
+.event-detail .detail-badge .color-picker {
     position: absolute;
     top: var(--padding-mini);
     right: var(--padding-mini);
@@ -37,7 +37,7 @@
     justify-content: center;
 }
 
-.task-detail .detail-badge .color-picker input[type="color"] {
+.event-detail .detail-badge .color-picker input[type="color"] {
     width: 1.5rem;
     height: 1.5rem;
     padding: 0;
@@ -45,4 +45,17 @@
     border-radius: var(--padding-mini);
     background: var(--color-background);
     cursor: pointer;
+}
+
+.event-detail .detail-image {
+    padding: 0;
+    overflow: hidden;
+    background-color: var(--color-tertiary);
+}
+
+.event-detail .detail-image img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
 }

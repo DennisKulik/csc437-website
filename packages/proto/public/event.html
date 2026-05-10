@@ -3,10 +3,11 @@
     <head>
         <meta charset="utf-8"/>
         <title>Event Page</title>
-        <!-- Styles -->
         <link rel="stylesheet" href="/styles/reset.css"/>
         <link rel="stylesheet" href="/styles/tokens.css"/>
         <link rel="stylesheet" href="/styles/page.css"/>
+        <link rel="stylesheet" href="/styles/details.css"/>
+        <link rel="stylesheet" href="/styles/events.css"/>
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -18,50 +19,66 @@
         <link rel="manifest" href="/icons/favicon/site.webmanifest">
     </head>
     <body>
-        <div class="header">
-            <div class="header-left">
-                <svg class="icon-logo">
-                    <use href="icons/planning.svg#icon-spiral-main"/>
-                </svg>
-                <h1>Momentum</h1>
-            </div>
-            <div class="header-right">
-                <label id="dark-mode-holder">
-                    <input id="dark-mode-toggle" type="checkbox" autocomplete="off"/>
-                    Dark Mode
-                </label>
-                <a href="index.html">Home</a>
-                <a href="" class="disabled">About</a>
-                <a href="" class="disabled">Contact</a>
-                <a href="user.html">
+        <div class="page">
+            <div class="header">
+                <div class="header-left">
                     <svg class="icon-logo">
-                        <use href="icons/planning.svg#icon-user-profile"/>
+                        <use href="icons/planning.svg#icon-spiral-main"/>
                     </svg>
-                </a>
-            </div>
-        </div>
-        <div class="detail-panel event-detail border-small">
-            <div class="detail-media">
-                <img src="images/bonfire.jpg" alt="Bonfire event">
-            </div>
-
-            <div class="detail-header">
-                <div class="detail-title-group">
-                <p class="detail-type">Event</p>
-                <h2>Brandon's Birthday Bonfire</h2>
+                    <h1>Momentum</h1>
+                </div>
+                <div class="header-right">
+                    <label id="dark-mode-holder">
+                        <input id="dark-mode-toggle" type="checkbox" autocomplete="off"/>
+                        Dark Mode
+                    </label>
+                    <a href="index.html">Home</a>
+                    <a href="" class="disabled">About</a>
+                    <a href="" class="disabled">Contact</a>
+                    <a href="user.html">
+                        <svg class="icon-logo">
+                            <use href="icons/planning.svg#icon-user-profile"/>
+                        </svg>
+                    </a>
                 </div>
             </div>
 
-            <div class="detail-meta">
-                <p><strong>Category:</strong> Personal</p>
-                <p><strong>Date:</strong> 4/7/2026</p>
-                <p><strong>Time:</strong> 6:00 PM</p>
-                <p><strong>Location:</strong> Grover Beach</p>
-            </div>
+            <div class="detail-panel event-detail border-small">
+                <div class="detail-header">
+                    <div class="detail-title-group">
+                        <p class="detail-type">Event</p>
+                        <h2>Brandon's Birthday Bonfire</h2>
+                    </div>
+                    <p class="detail-status">Upcoming</p>
+                </div>
 
-            <div class="detail-section">
-                <h3>Description</h3>
-                <p>There will be a big bonfire to celebrate Brandon's 22nd birthday!</p>
+                <div class="detail-meta">
+                    <div class="details">
+                        <p><strong>Category:</strong> <a href="category.html">Personal</a></p>
+                        <p><strong>Date:</strong> 4/7/2026</p>
+                        <p><strong>Time:</strong> 6:00 PM</p>
+                        <p><strong>Location:</strong> Grover Beach</p>
+                    </div>
+
+                    <!-- <div class="details detail-badge">
+                        <div class="color-picker">
+                            <input type="color" class="border-small">
+                        </div>
+                    </div> -->
+                    <div class="details detail-image">
+                        <img src="/images/bonfire.jpg" alt="Bonfire at the beach">
+                    </div>
+                </div>
+
+                <div class="detail-section">
+                    <h3>Description</h3>
+                    <p>There will be a big bonfire to celebrate Brandon's 22nd birthday!</p>
+                </div>
+
+                <div class="detail-section">
+                    <h3>Notes</h3>
+                    <p>Bring warm clothes, beach chairs, and anything needed for the bonfire.</p>
+                </div>
             </div>
         </div>
         <script src="/javascript/main.js"></script>

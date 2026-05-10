@@ -1,0 +1,5 @@
+ - add custom wrapper color picker to task-detail detail-badge
+ - add if (img) then (img) else (category color picker) to event-detail detail-badge
+ - add upcoming/in progress/completed switch for tasks
+ - add upcoming/in progress/completed switch for events
+ 
