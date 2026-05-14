@@ -2,7 +2,7 @@
 const darkModeHolder = document.getElementById("dark-mode-holder");
 
 // add a listener to the element that listens for any change
-darkModeHolder.addEventListener("change", function (event) {
+darkModeHolder.addEventListener("change", (event) => {
     // if the event occurred at the right element
     if (event.target.id == "dark-mode-toggle") {
         // stop bubbling 
@@ -13,7 +13,7 @@ darkModeHolder.addEventListener("change", function (event) {
 });
 
 // listen on the body for our custom event 
-document.body.addEventListener("darkmode:toggle", function (event) {
+document.body.addEventListener("darkmode:toggle", (event) => {
     const checked = event.detail.checked;
 
     if (checked) {
