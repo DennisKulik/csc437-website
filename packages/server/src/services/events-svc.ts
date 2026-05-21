@@ -1,121 +1,49 @@
+import { Schema, model } from "mongoose";
 import { Events } from "../models";
+import { title } from "node:process";
+import { userInfo } from "node:os";
 
-const events: { [key: string]: Events} = {
-    "2026-04-05": {
-        id: "2026-04-05",
-        week: new Date("2026-04-05"),
-        weekdays: [
-            {
-                day: "Monday",
-                oneTimeEvents: [
-                    {
-                        title: "Big Bonfire",
-                        href: "event.html"
-                    }
-                ],
-                recurringEvents: [
-                    {
-                        title: "Web Dev Class",
-                        href: ""
-                    }
-                ]
-            },
-            {
-                day: "Tuesday",
-                oneTimeEvents: [
-                    {
-                        title: "Big Bonfire",
-                        href: "event.html"
-                    }
-                ],
-                recurringEvents: [
-                    {
-                        title: "Web Dev Class",
-                        href: ""
-                    }
-                ]
-            },
-            {
-                day: "Wednesday",
-                oneTimeEvents: [
-                    {
-                        title: "Big Bonfire",
-                        href: "event.html"
-                    }
-                ],
-                recurringEvents: [
-                    {
-                        title: "Web Dev Class",
-                        href: ""
-                    }
-                ]
-            },
-            {
-                day: "Thursday",
-                oneTimeEvents: [
-                    {
-                        title: "Big Bonfire",
-                        href: "event.html"
-                    }
-                ],
-                recurringEvents: [
-                    {
-                        title: "Web Dev Class",
-                        href: ""
-                    }
-                ]
-            },
-            {
-                day: "Friday",
-                oneTimeEvents: [
-                    {
-                        title: "Big Bonfire",
-                        href: "event.html"
-                    }
-                ],
-                recurringEvents: [
-                    {
-                        title: "Web Dev Class",
-                        href: ""
-                    }
-                ]
-            },
-            {
-                day: "Saturday",
-                oneTimeEvents: [
-                    {
-                        title: "Big Bonfire",
-                        href: "event.html"
-                    }
-                ],
-                recurringEvents: [
-                    {
-                        title: "Web Dev Class",
-                        href: ""
-                    }
-                ]
-            },
-            {
-                day: "Sunday",
-                oneTimeEvents: [
-                    {
-                        title: "Big Bonfire",
-                        href: "event.html"
-                    }
-                ],
-                recurringEvents: [
-                    {
-                        title: "Web Dev Class",
-                        href: ""
-                    }
-                ]
-            }
-        ]
-    }
-};
+const eventItemSchema = new Schema(
+    {
+        title: String,
+        href: String
+    },
+    { _id: false }
+);
 
-function get(id: string): Events | undefined {
-    return events[id];
+const weekdaySchema = new Schema(
+    {
+        day: String,
+        oneTimeEvents: [eventItemSchema],
+        recurringEvents: [eventItemSchema]
+    },
+    { _id: false }
+);
+
+const eventsSchema = new Schema(
+    {
+        id: String,
+        week: Date,
+        weekdays: [weekdaySchema]
+    },
+    { collection: "events" }
+);
+
+const EventsModel = model<Events>(
+    "Events", 
+    eventsSchema
+);
+
+function index(): Promise<Events[]> {
+    return EventsModel.find();
 }
 
-export default { get };
+function get(id: string): Promise<Events | undefined> {
+    return EventsModel.find({ id })
+        .then((list) => list[0])
+        .catch((err) => {
+            throw `${id} Not Found`;
+        });
+}
+
+export default { index, get };
