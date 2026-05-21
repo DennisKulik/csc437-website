@@ -24,4 +24,11 @@ function get(id) {
         throw `${id} Not Found`;
     });
 }
-export default { index, get };
+function create(json) {
+    const t = new EventsModel(json);
+    return t.save();
+}
+function update(id, events) {
+    return EventsModel.findOneAndUpdate({ id }, events);
+}
+export default { index, get, create };

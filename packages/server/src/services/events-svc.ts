@@ -1,7 +1,5 @@
 import { Schema, model } from "mongoose";
 import { Events } from "../models";
-import { title } from "node:process";
-import { userInfo } from "node:os";
 
 const eventItemSchema = new Schema(
     {
@@ -34,6 +32,7 @@ const EventsModel = model<Events>(
     eventsSchema
 );
 
+
 function index(): Promise<Events[]> {
     return EventsModel.find();
 }
@@ -46,4 +45,27 @@ function get(id: string): Promise<Events | undefined> {
         });
 }
 
-export default { index, get };
+function create(json: Events): Promise<Events> {
+    const t = new EventsModel(json);
+    return t.save();
+}
+
+function update(id: string, events: Events): Promise<Events | undefined> {
+    return EventsModel.findOneAndUpdate(
+        { id },
+        events,
+        { new: true })
+        .then((updated) => {
+            if (!updated) throw `${id} not updated`;
+            else return updated as Events;
+        });
+}
+
+function remove(id: string): Promise<void> {
+    return EventsModel.findOneAndDelete({ id })
+        .then((deleted) => {
+            if (!deleted) throw `${id} not deleted`;
+        });
+}
+
+export default { index, get, create, update, remove };

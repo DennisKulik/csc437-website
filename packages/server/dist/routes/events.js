@@ -21,4 +21,10 @@ router.get("/:id", (req, res) => {
     })
         .catch((err) => res.status(404).send(err));
 });
+router.post("/", (req, res) => {
+    const newEvents = req.body;
+    EventsSvc.create(newEvents)
+        .then((events) => res.status(201).json(events))
+        .catch((err) => res.status(500).send(err));
+});
 export default router;
