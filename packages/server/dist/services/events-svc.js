@@ -29,6 +29,19 @@ function create(json) {
     return t.save();
 }
 function update(id, events) {
-    return EventsModel.findOneAndUpdate({ id }, events);
+    return EventsModel.findOneAndUpdate({ id }, events, { new: true })
+        .then((updated) => {
+        if (!updated)
+            throw `${id} not updated`;
+        else
+            return updated;
+    });
 }
-export default { index, get, create };
+function remove(id) {
+    return EventsModel.findOneAndDelete({ id })
+        .then((deleted) => {
+        if (!deleted)
+            throw `${id} not deleted`;
+    });
+}
+export default { index, get, create, update, remove };

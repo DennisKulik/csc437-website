@@ -27,4 +27,30 @@ router.post("/", (req, res) => {
         .then((events) => res.status(201).json(events))
         .catch((err) => res.status(500).send(err));
 });
+router.put("/:id", (req, res) => {
+    const { id } = req.params;
+    const newEvents = req.body;
+    if (Array.isArray(id)) {
+        res.status(400).send();
+        return;
+    }
+    EventsSvc.update(id, newEvents)
+        .then((events) => {
+        if (!events)
+            res.status(404).end();
+        else
+            res.json(events);
+    })
+        .catch((err) => res.status(404).end());
+});
+router.delete("/:id", (req, res) => {
+    const { id } = req.params;
+    if (Array.isArray(id)) {
+        res.status(400).send();
+        return;
+    }
+    EventsSvc.remove(id)
+        .then(() => res.status(204).end())
+        .catch((err) => res.status(404).send(err));
+});
 export default router;

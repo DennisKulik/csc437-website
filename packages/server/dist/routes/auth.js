@@ -45,4 +45,19 @@ function generateAccessToken(username) {
         });
     });
 }
+export function authenticateUser(req, res, next) {
+    const authHeader = req.headers["authorization"];
+    const token = authHeader && authHeader.split(" ")[1];
+    if (!token) {
+        res.status(401).end();
+    }
+    else {
+        jwt.verify(token, TOKEN_SECRET, (error, decoded) => {
+            if (decoded)
+                next();
+            else
+                res.status(401).end();
+        });
+    }
+}
 export default router;
