@@ -8,7 +8,8 @@ export class LoginFormElement extends HTMLElement {
         password: ""
     }).with(fromInputs(this), "username", "password");
 
-    view = html`<form>
+    view = html`
+        <form>
             <slot></slot>
             <button type="submit">
                 <slot name="submit-label">Login</slot>
@@ -24,9 +25,6 @@ export class LoginFormElement extends HTMLElement {
                 submit: (ev) => 
                     this.submitLogin(ev, this.getAttribute("api") || "#")
             });
-            // .listen("submit", (ev) =>
-            //     this.submitLogin(ev, this.getAttribute("api") || "#")
-            // );
     }
 
     submitLogin(event, endpoint) {
@@ -61,6 +59,10 @@ export class LoginFormElement extends HTMLElement {
         }
         form {
             display: contents;
+        }
+        button {
+            width: fit-content;
+            margin: 0 auto;
         }
     `;
 }

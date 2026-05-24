@@ -1,33 +1,101 @@
 import { html, css, shadow } from "@unbndl/html";
+import { createViewModel, fromAttributes } from "@unbndl/view";
+import { fromAuth } from "@unbndl/auth";
 import reset from "/styles/reset.css.js";
 
 export class MomentumEventsHolder extends HTMLElement {
 
+    viewModel = createViewModel({
+        authenticated: false,
+        token: undefined,
+        currentWeekId: MomentumEventsHolder.getCurrentWeekId(),
+        week: "",
+        weekdays: []
+    })
+    .with(fromAttributes(this), "src")
+    .with(fromAuth(this), "authenticated", "token");
+
+    view = html`
+        <div class="events-holder">
+            <div class="section-header">
+                <h2>Events</h2>
+                <div class="week-controls">
+                    <button type="button" class="button hover-lift prev-week-button">Prev</button>
+                    <span class="section-meta">
+                        ${($) => MomentumEventsHolder.formatWeek($.week || $.currentWeekId)}
+                    </span>
+                    <button type="button" class="button hover-lift next-week-button">Next</button>
+                </div>
+            </div>
+
+            <div class="weekday-list">
+                ${($) => ($.weekdays || []).map((weekday) => MomentumEventsHolder.renderWeekday(weekday))}
+            </div>
+        </div>
+        `;
+
     constructor() {
         super();
         shadow(this)
-            .styles(reset.styles, MomentumEventsHolder.styles);
+            .styles(reset.styles, MomentumEventsHolder.styles)
+            .replace(this.viewModel.render(this.view))
+            .delegate(".prev-week-button", {
+                click: () => this.shiftWeek(-7)
+            })
+            .delegate(".next-week-button", {
+                click: () => this.shiftWeek(7)
+            });
+
+        this.viewModel.createEffect(($) => {
+            if ($.authenticated && $.currentWeekId) {
+                this.hydrate(`/api/events/${$.currentWeekId}`).then((data) => {
+                    this.viewModel.set("week", data?.week || $.currentWeekId);
+                    this.viewModel.set("weekdays", data?.weekdays || []);
+                });
+            }
+        });
     }
 
-    static observedAttributes = ["src"];
-
-    attributeChangedCallback(name, _, newValue) {
-        if (name === "src") {
-            // hydrate and render into shadow DOM
-            this.hydrate(newValue).then((data) => {
-                const view = MomentumEventsHolder.render(data)
-                shadow(this).replace(view);
-            });
+    get authorization() {
+        const $ = this.viewModel.toObject();
+        if ($.authenticated) {
+            return { Authorization: `Bearer ${$.token}` };
+        } else {
+            return {};
         }
     }
-    
+
+    shiftWeek(days) {
+        const $ = this.viewModel.toObject();
+        const current = new Date(`${$.currentWeekId}T00:00:00`);
+        current.setDate(current.getDate() + days);
+        this.viewModel.set("currentWeekId", MomentumEventsHolder.toWeekId(current));
+    }
+
+    static getCurrentWeekId() {
+        const today = new Date();
+        const day = today.getDay();
+        today.setDate(today.getDate() - day);
+        return this.toWeekId(today);
+    }
+
+    static toWeekId(date) {
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, "0");
+        const day = String(date.getDate()).padStart(2, "0");
+        return `${year}-${month}-${day}`;
+    }
+    static formatWeek(week) {
+        return String(week).slice(0, 10);
+    }
+
     static renderEvent(event, slotName) {
         const { title, href, disabled } = event;
 
         if (disabled) {
             return html`
                 <li slot=${slotName}>
-                    <momentum-event-card disabled}>
+                    <momentum-event-card disabled>
                         ${title}
                     </momentum-event-card>
                 </li>
@@ -57,32 +125,16 @@ export class MomentumEventsHolder extends HTMLElement {
             </momentum-weekday-section>
         `;
     }
-
-    static render(data = {}) {
-        // render the data
-        const week = data.week || "This Week";
-        const weekdays = data.weekdays || [];
-
-        return html`
-            <div class="events-holder">
-                <div class="section-header">
-                    <h2>Events</h2>
-                    <span class="section-meta">${week}</span>
-                </div>
-
-                <div class="weekday-list">
-                    ${weekdays.map((weekday) => this.renderWeekday(weekday))}
-                </div>
-            </div>
-        `;
-    }
+    
 
     hydrate(src) {
-        // return a promise that fetches the data
-        return fetch(src).then((response) => {
+        return fetch(src, { headers: this.authorization })
+        .then((response) => {
             if (response.status !== 200) 
                 throw `HTTP Status ${response.status}`;
-            else return response.json();
+            else {
+                return response.json();
+            }
         })
         .catch((error) => {
             console.log(`Could not fetch ${src}:`, error);

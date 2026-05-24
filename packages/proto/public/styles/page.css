@@ -123,6 +123,12 @@ svg.icon-logo {
 }
 
 /* Containers */
+.border-mini {
+    border: var(--padding-mini) solid var(--color-primary);
+    border-radius: var(--padding-mini);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
 .border-small {
     border: var(--padding-small) solid var(--color-primary);
     border-radius: var(--padding-small);

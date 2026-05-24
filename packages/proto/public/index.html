@@ -20,80 +20,72 @@
         <link rel="manifest" href="/icons/favicon/site.webmanifest">
     </head>
     <body>
-        <div class="page">
+        <auth-provider>
             <momentum-header></momentum-header>
-            <!-- <div class="header">
-                <div class="header-left">
-                    <svg class="icon-logo">
-                        <use href="icons/planning.svg#icon-spiral-main"/>
-                    </svg>
-                    <h1>Momentum</h1>
-                </div>
-                <div class="header-right">
-                    <label id="dark-mode-holder">
-                        <input id="dark-mode-toggle" type="checkbox" autocomplete="off"/>
-                        Dark Mode
-                    </label>
-                    <a href="index.html">Home</a>
-                    <a href="" class="disabled">About</a>
-                    <a href="" class="disabled">Contact</a>
-                    <a href="user.html">
-                        <svg class="icon-logo">
-                            <use href="icons/planning.svg#icon-user-profile"/>
+            <div class="page">
+                <p>This is the best planning and organization website</p>
+                <momentum-tasks-holder src="/data/tasks.json"></momentum-tasks-holder>
+                <momentum-events-holder src="/api/events/2026-04-05"></momentum-events-holder>
+                <dl>
+                    <dt>This is just old navigation stuff</dt>
+                    <dd><a href="user.html">Dennis Kulik</a></dd>
+                    <dt>
+                        <svg class="icon">
+                            <use href="icons/planning.svg#icon-bulb"/>
                         </svg>
-                    </a>
-                </div>
-            </div> -->
-            <p>This is the best planning and organization website</p>
-            <momentum-tasks-holder src="/data/tasks.json"></momentum-tasks-holder>
-            <momentum-events-holder src="/api/events"></momentum-events-holder>
-            <dl>
-                <dt>This is just old navigation stuff</dt>
-                <dd><a href="user.html">Dennis Kulik</a></dd>
-                <dt>
-                    <svg class="icon">
-                        <use href="icons/planning.svg#icon-bulb"/>
-                    </svg>
-                    User page
-                </dt>
-                <dd><a href="event.html">Big Bonfire</a></dd>
-                <dt>
-                    <svg class="icon">
-                        <use href="icons/planning.svg#icon-calendar"/>
-                    </svg>
-                    Event page
-                </dt>
-                <dd><a href="task.html">Build a website</a></dd>
-                <dt>
-                    <svg class="icon">
-                        <use href="icons/planning.svg#icon-checklist"/>
-                    </svg>    
-                    Task page
-                </dt>
-                <dd><a href="habit.html">Workout</a></dd>
-                <dt>
-                    <svg class="icon">
-                        <use href="icons/planning.svg#icon-timeline"/>
-                    </svg>
-                    Habit page
-                </dt>
-                <dd><a href="category.html">School</a></dd>
-                <dt>
-                    <svg class="icon">
-                        <use href="icons/planning.svg#icon-sticky-note"/>                
-                    </svg>    
-                    Category page
-                </dt>
-            </dl>
-        </div>
-        <script type="importmap">
-            {
-                "imports": {
-                    "@unbndl/html": "https://unpkg.com/@unbndl/html"
+                        User page
+                    </dt>
+                    <dd><a href="event.html">Big Bonfire</a></dd>
+                    <dt>
+                        <svg class="icon">
+                            <use href="icons/planning.svg#icon-calendar"/>
+                        </svg>
+                        Event page
+                    </dt>
+                    <dd><a href="task.html">Build a website</a></dd>
+                    <dt>
+                        <svg class="icon">
+                            <use href="icons/planning.svg#icon-checklist"/>
+                        </svg>    
+                        Task page
+                    </dt>
+                    <dd><a href="habit.html">Workout</a></dd>
+                    <dt>
+                        <svg class="icon">
+                            <use href="icons/planning.svg#icon-timeline"/>
+                        </svg>
+                        Habit page
+                    </dt>
+                    <dd><a href="category.html">School</a></dd>
+                    <dt>
+                        <svg class="icon">
+                            <use href="icons/planning.svg#icon-sticky-note"/>                
+                        </svg>    
+                        Category page
+                    </dt>
+                </dl>
+            </div>
+            <script type="importmap">
+                {
+                    "imports": {
+                        "@unbndl/auth": "https://unpkg.com/@unbndl/auth",
+                        "@unbndl/html": "https://unpkg.com/@unbndl/html",
+                        "@unbndl/view": "https://unpkg.com/@unbndl/view"
+                    }
                 }
-            }
-        </script>
-        <script src="/javascript/main.js"></script>
-        <script type="module" src="/javascript/components.js"></script>
+            </script>
+            <script type="module">
+                import { define } from "@unbndl/html";
+                import { Auth } from "@unbndl/auth";
+                import { LoginFormElement } from "/javascript/login-form.js";
+
+                define({
+                    "auth-provider": Auth.Provider,
+                    "login-form": LoginFormElement
+                });
+            </script>
+            <script src="/javascript/main.js"></script>
+            <script type="module" src="/javascript/components.js"></script>
+        </auth-provider>
     </body>
 </html>

@@ -92,8 +92,17 @@
 .field input {
     width: 100%;
     min-width: 0;
+ 
+    font: inherit;
+    color: var(--text-primary);
+    background-color: var(--color-background);
+
+    padding: var(--padding-mini);
+    border: 2px solid var(--color-primary);
+    border-radius: var(--padding-mini);
 }
 
+ 
 .stat-row {
     display: grid;
     align-content: start;
