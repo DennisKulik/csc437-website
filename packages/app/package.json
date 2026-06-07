@@ -1,0 +1,17 @@
+{
+  "name": "app",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "@unbndl/auth": "^1.0.7",
+    "@unbndl/html": "^1.0.7",
+    "@unbndl/switch": "^1.0.9",
+    "@unbndl/view": "^1.0.7"
+  }
+}

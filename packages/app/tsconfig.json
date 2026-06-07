@@ -1,0 +1,12 @@
+{
+    "compilerOptions": {                  // wow i added fun comments to explain this to myself
+    "module": "preserve",                 // Leave import/export syntax for Vite.
+    "allowImportingTsExtensions": true,   // Let me import files with .ts in the path.
+    "moduleResolution": "bundler",        // Resolve imports like Vite/a bundler will.
+    "noEmit": true,                       // Type-check only; don't output JS files.
+    "rootDir": "./src",                   // My source code starts in src.
+    "outDir": "./dist"                    // Build output would go to dist.
+  },
+  "include": ["src"],                     // Type-check files in src.
+  "lib": ["ESNext", "DOM", "DOM.Iterable"]// Use modern JS + browser API types.
+}

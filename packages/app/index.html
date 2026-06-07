@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8"/>
+        <title>Planning Website</title>
+        <!-- Styles -->
+        <link rel="stylesheet" href="/styles/reset.css"/>
+        <link rel="stylesheet" href="/styles/tokens.css"/>
+        <link rel="stylesheet" href="/styles/page.css"/>
+        <!-- Fonts -->
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Almendra:ital,wght@0,400;0,700;1,400;1,700&family=Josefin+Slab:ital,wght@0,100..700;1,100..700&display=swap" rel="stylesheet">
+        <!-- Favicon -->
+        <link rel="apple-touch-icon" sizes="180x180" href="/icons/favicon/apple-touch-icon.png">
+        <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon/favicon-32x32.png">
+        <link rel="icon" type="image/png" sizes="16x16" href="/icons/favicon/favicon-16x16.png">
+        <link rel="manifest" href="/icons/favicon/site.webmanifest">
+        <script type="module" src="/src/main.ts"></script>
+    </head>
+    <body>
+        <!-- listens for clicks to prevent reload on navigation -->
+        <history-provider>  
+            <auth-provider>
+                <article class="page">
+                    <momentum-header></momentum-header>
+                    <!-- loads new content based on url -->
+                    <router-switch></router-switch>
+                </article>
+            </auth-provider>
+        </history-provider>
+    </body>
+</html>
