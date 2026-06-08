@@ -1,17 +1,24 @@
 {
-  "name": "app",
-  "version": "1.0.0",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "author": "",
-  "license": "ISC",
-  "description": "",
-  "dependencies": {
-    "@unbndl/auth": "^1.0.7",
-    "@unbndl/html": "^1.0.7",
-    "@unbndl/switch": "^1.0.9",
-    "@unbndl/view": "^1.0.7"
-  }
+	"name": "app",
+	"version": "1.0.0",
+	"main": "index.js",
+	"scripts": {
+		"dev": "npx vite",
+		"build": "npx tsc && npx vite build",
+		"test": "echo \"Error: no test specified\" && exit 1"
+	},
+	"author": "",
+	"license": "ISC",
+	"description": "",
+	"dependencies": {
+		"@unbndl/auth": "^1.0.7",
+		"@unbndl/html": "^1.0.7",
+		"@unbndl/switch": "^1.0.9",
+		"@unbndl/view": "^1.0.7"
+	},
+	"devDependencies": {
+		"@types/route-parser": "^0.1.7",
+		"typescript": "^6.0.3",
+		"vite": "^8.0.16"
+	}
 }

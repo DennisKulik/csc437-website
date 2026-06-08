@@ -21,12 +21,10 @@
     <body>
         <!-- listens for clicks to prevent reload on navigation -->
         <history-provider>  
-            <auth-provider>
-                <article class="page">
-                    <momentum-header></momentum-header>
-                    <!-- loads new content based on url -->
-                    <router-switch></router-switch>
-                </article>
+            <auth-provider redirect="/login.html">
+                <momentum-header></momentum-header>
+                <!-- loads new content based on url -->
+                <router-switch></router-switch>
             </auth-provider>
         </history-provider>
     </body>

@@ -1,0 +1,46 @@
+.page h2 {
+    grid-column: 3 / span 4;
+    margin: var(--padding-standard) 0 0;
+    text-align: center;
+
+    color: var(--text-primary);
+    font-family: var(--font-primary);
+    font-weight: 700;
+    font-size: 40px;
+}
+
+.page main.card {
+    grid-column: 3 / span 4;
+    margin: var(--padding-small) 0;
+    padding: var(--padding-standard);
+
+    background-color: var(--color-secondary);
+}
+
+
+.page p {
+    grid-column: 3 / span 4;
+    text-align: center;
+}
+
+@media (max-width: 1100px) {
+    .page h2,
+    .page main.card,
+    .page p {
+        grid-column: 2 / span 2;
+    }
+}
+
+@media (max-width: 700px) {
+    .page h2,
+    .page main.card,
+    .page p {
+        grid-column: start / end;
+        margin-left: var(--padding-small);
+        margin-right: var(--padding-small);
+    }
+
+    .page main.card {
+        padding: var(--padding-small);
+    }
+}

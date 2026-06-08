@@ -6,9 +6,18 @@
 	"scripts": {
 		"dev": "nodemon",
 		"build": "npx tsc",
+
 		"start": "npm run build && npm run start:node",
 		"start:node": "node dist/index.js",
-		"start:proto": "cross-env STATIC=../proto/public npm run start",
+
+		"start:api": "cross-env STATIC=./public npm run start",
+		"start:app": "cross-env STATIC=../app/dist npm run start",
+		"start:proto": "cross-env STATIC=../proto/dist npm run start",
+
+		"start:api:win": "npm run build && set STATIC=./public&& node dist/index.js",
+		"start:app:win": "npm run build && set STATIC=../app/dist&& node dist/index.js",
+		"start:proto:win": "npm run build && set STATIC=../proto/dist&& node dist/index.js",
+
 		"check": "tsc --noEmit"
 	},
 	"author": "",

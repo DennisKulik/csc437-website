@@ -45,11 +45,11 @@ export class MomentumEventsHolder extends HTMLElement {
             <div class="section-header">
                 <h2>Events</h2>
                 <div class="week-controls">
-                    <button type="button" class="button hover-lift">Prev</button>
+                    <button type="button" class="button hover-lift prev-week-button">Prev</button>
                     <span class="section-meta">
                         ${($) => MomentumEventsHolder.formatWeek($.week || $.currentWeekId)}
                     </span>
-                    <button type="button" class="button hover-lift">Next</button>
+                    <button type="button" class="button hover-lift next-week-button">Next</button>
                 </div>
             </div>
 

@@ -1,18 +1,21 @@
 import { define, html } from "@unbndl/html";
 import { Auth } from "@unbndl/auth";
 import { BrowserHistory, Switch } from "@unbndl/switch";
-import { MomentumTaskCard } from "./components/task-card.js";
-import { MomentumEventCard } from "./components/event-card.js";
-import { MomentumWeekdaySection } from "./components/weekday-section.js";
-import { MomentumEventsHolder } from "./components/events-holder.js";
-import { MomentumTasksHolder } from "./components/tasks-holder.js";
+
 import { MomentumHeader } from "./components/header-element.ts";
+import { MomentumTaskCard } from "./components/task-card.ts";
+import { MomentumEventCard } from "./components/event-card.ts";
+import { MomentumWeekdaySection } from "./components/weekday-section.ts";
+import { MomentumEventsHolder } from "./components/events-holder.ts";
+import { MomentumTasksHolder } from "./components/tasks-holder.ts";
+
+import { HomeViewElement } from "./views/home-view.ts";
 
 const routes: Switch.Route[] = [
-        {
-            path: "app/user/",
-            view: html`<user-view></user-view>`
-        },
+        // {
+        //     path: "app/user/",
+        //     view: html`<user-view></user-view>`
+        // },
         {
             path: "/app",
             view: html`<home-view></home-view>`
@@ -31,11 +34,13 @@ define ({
             super(routes);
         }
     },
-    "momentum-header": MomentumHeader,
 
+    "momentum-header": MomentumHeader,
     "momentum-task-card": MomentumTaskCard,
     "momentum-event-card": MomentumEventCard,
     "momentum-weekday-section": MomentumWeekdaySection,
     "momentum-events-holder": MomentumEventsHolder,
-    "momentum-tasks-holder": MomentumTasksHolder
+    "momentum-tasks-holder": MomentumTasksHolder,
+
+    "home-view": HomeViewElement
 })

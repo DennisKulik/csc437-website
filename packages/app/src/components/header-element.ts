@@ -31,13 +31,13 @@ export class MomentumHeader extends HTMLElement {
                     Dark Mode
                 </label>
 
-                <a href="index.html">Home</a>
+                <a href="/app">Home</a>
 
 
                 ${($) => 
                     $.authenticated 
                     ? html`
-                        <a href="user.html" class="logged-in">
+                        <a href="/app/user" class="logged-in">
                             <svg class="icon-logo">
                                 <use href="icons/planning.svg#icon-user-profile"></use>
                             </svg>
@@ -101,7 +101,7 @@ export class MomentumHeader extends HTMLElement {
     }
 
     login() {
-        window.location.href = "login.html";
+        window.location.href = "/login.html";
     }
 
     static styles = css`
