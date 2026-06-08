@@ -8,9 +8,9 @@ export default defineConfig({
   build: {
     rollupOptions: {
       input: {
-        main: resolve(__dirname, 'index.html')
+        main: resolve(__dirname, 'index.html'),
         // add any other HTML files that require Vite to scan:
-        // login: resolve(__dirname, 'login.html'),
+        login: resolve(__dirname, 'login.html')
         // newuser: resolve(__dirname, 'new-user.html')
       },
     },
