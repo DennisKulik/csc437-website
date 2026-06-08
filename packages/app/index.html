@@ -20,11 +20,13 @@
     </head>
     <body>
         <!-- listens for clicks to prevent reload on navigation -->
-        <history-provider>  
+        <history-provider base="/app">  
             <auth-provider redirect="/login.html">
-                <momentum-header></momentum-header>
-                <!-- loads new content based on url -->
-                <router-switch></router-switch>
+                <store-provider>
+                    <momentum-header></momentum-header>
+                    <!-- loads new content based on url -->
+                    <router-switch></router-switch>
+                </store-provider>
             </auth-provider>
         </history-provider>
     </body>

@@ -1,6 +1,8 @@
 import { html, css, shadow, type Template } from "@unbndl/html";
-import { createViewModel, fromAttributes } from "@unbndl/view";
-import { fromAuth } from "@unbndl/auth";
+import { createViewModel } from "@unbndl/view";
+import { Message, fromService } from "@unbndl/service";
+
+import type { Model } from "../model.ts";
 import reset from "../styles/reset.css.js";
 import button from "../styles/button.css.ts";
 
@@ -15,49 +17,35 @@ type Weekday = {
     recurringEvents: EventCard[];
 };
 
-type EventsHolderViewModel = {
-    src?: string;
-    authenticated: boolean;
-    token?: string;
-    currentWeekId: string;
-    week: string;
-    weekdays: Weekday[];
-};
-
-type EventsHolderAttributes = {
-    src?: string;
-};
-
 export class MomentumEventsHolder extends HTMLElement {
 
-    viewModel = createViewModel<EventsHolderViewModel>({
-        authenticated: false,
-        token: undefined,
-        currentWeekId: MomentumEventsHolder.getCurrentWeekId(),
-        week: "",
-        weekdays: []
-    })
-    .with(fromAttributes<EventsHolderAttributes>(this), "src")
-    .with(fromAuth(this), "authenticated", "token");
-
-    view: Template<[EventsHolderViewModel]> = html`
+    viewModel = createViewModel<Model>({})
+        .with(fromService<Model>(this, "store"));
+    
+    view: Template<[Model]> = html`
         <div class="events-holder">
             <div class="section-header">
                 <h2>Events</h2>
                 <div class="week-controls">
                     <button type="button" class="button hover-lift prev-week-button">Prev</button>
                     <span class="section-meta">
-                        ${($) => MomentumEventsHolder.formatWeek($.week || $.currentWeekId)}
+                        ${($) =>
+                            MomentumEventsHolder.formatWeek(
+                                $.currentWeekId || $.events?.id || MomentumEventsHolder.getCurrentWeekId()
+                            )}
                     </span>
                     <button type="button" class="button hover-lift next-week-button">Next</button>
                 </div>
             </div>
 
             <div class="weekday-list">
-                ${($) => ($.weekdays || []).map((weekday) => MomentumEventsHolder.renderWeekday(weekday))}
+                ${($) =>
+                    ($.events?.weekdays || []).map((weekday) =>
+                        MomentumEventsHolder.renderWeekday(weekday as Weekday)
+                    )}
             </div>
         </div>
-        `;
+    `;
 
     constructor() {
         super();
@@ -65,36 +53,20 @@ export class MomentumEventsHolder extends HTMLElement {
             .styles(reset.styles, button.styles, MomentumEventsHolder.styles)
             .replace(this.viewModel.render(this.view))
             .delegate(".prev-week-button", {
-                click: () => this.shiftWeek(-7)
+                click: () => Message.dispatch(this, "events/week-prev", {})
             })
             .delegate(".next-week-button", {
-                click: () => this.shiftWeek(7)
+                click: () => Message.dispatch(this, "events/week-next", {})
             });
-
-        this.viewModel.createEffect(($) => {
-            if ($.authenticated && $.currentWeekId) {
-                this.hydrate(`/api/events/${$.currentWeekId}`).then((data) => {
-                    this.viewModel.set("week", data?.week || $.currentWeekId);
-                    this.viewModel.set("weekdays", data?.weekdays || []);
-                });
-            }
-        });
     }
 
-    get authorization(): HeadersInit {
+    connectedCallback() {
         const $ = this.viewModel.toObject();
-        if ($.authenticated) {
-            return { Authorization: `Bearer ${$.token}` };
-        } else {
-            return {};
+        const weekid = $.currentWeekId || $.events?.id || MomentumEventsHolder.getCurrentWeekId();
+
+        if (!$.events) {
+            Message.dispatch(this, "events/request", { weekid });
         }
-    }
-
-    shiftWeek(days: number) {
-        const $ = this.viewModel.toObject();
-        const current = new Date(`${$.currentWeekId}T00:00:00`);
-        current.setDate(current.getDate() + days);
-        this.viewModel.set("currentWeekId", MomentumEventsHolder.toWeekId(current));
     }
 
     static getCurrentWeekId(): string {
@@ -110,6 +82,7 @@ export class MomentumEventsHolder extends HTMLElement {
         const day = String(date.getDate()).padStart(2, "0");
         return `${year}-${month}-${day}`;
     }
+
     static formatWeek(week: string): string {
         return week.slice(0, 10);
     }
@@ -128,8 +101,8 @@ export class MomentumEventsHolder extends HTMLElement {
     
     static renderWeekday(weekday: Weekday) {
         const day = weekday.day;
-        const oneTimeEvents = weekday?.oneTimeEvents || [];
-        const recurringEvents = weekday?.recurringEvents || [];
+        const oneTimeEvents = weekday.oneTimeEvents || [];
+        const recurringEvents = weekday.recurringEvents || [];
 
         return html`
             <momentum-weekday-section>
@@ -141,21 +114,6 @@ export class MomentumEventsHolder extends HTMLElement {
         `;
     }
     
-
-    hydrate(src: string) {
-        return fetch(src, { headers: this.authorization })
-        .then((response) => {
-            if (response.status !== 200) 
-                throw `HTTP Status ${response.status}`;
-            else {
-                return response.json();
-            }
-        })
-        .catch((error) => {
-            console.log(`Could not fetch ${src}:`, error);
-        });
-    }
-
     static styles = css`
         :host {
             grid-column: 4 / end;

@@ -73,7 +73,7 @@ export class MomentumHeader extends HTMLElement {
             const target = event.target as HTMLInputElement | null;
             const currentTarget = event.currentTarget as HTMLElement | null;
 
-            if (target?.id == "dark-mode-toggle" && currentTarget) {
+            if (target?.id === "dark-mode-toggle" && currentTarget) {
                 event.stopPropagation();
                 relayDarkModeToggle(currentTarget, target.checked);
             }

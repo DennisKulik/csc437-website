@@ -22,7 +22,7 @@ export class MomentumTaskCard extends HTMLElement {
             .styles(reset.styles, button.styles, card.styles, MomentumTaskCard.styles);
     }
 
-    attributeChangedCallback(name: string, oldValue: string | null, newValue: string | null) {
+    attributeChangedCallback(name: string, _: string | null, newValue: string | null) {
         const link = this.shadowRoot?.querySelector("a") as HTMLAnchorElement | null;
 
         if (!link) return;

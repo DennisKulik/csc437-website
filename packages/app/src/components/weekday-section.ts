@@ -1,5 +1,5 @@
-import { html, css, shadow } from "@unbndl/html"
-import reset from "../styles/reset.css.js"
+import { html, css, shadow } from "@unbndl/html";
+import reset from "../styles/reset.css.js";
 import button from "../styles/button.css.ts";
 
 export class MomentumWeekdaySection extends HTMLElement {
@@ -36,7 +36,7 @@ export class MomentumWeekdaySection extends HTMLElement {
         super();
         shadow(this)
             .template(MomentumWeekdaySection.template)
-            .styles(reset.styles, button.styles, MomentumWeekdaySection.styles)
+            .styles(reset.styles, button.styles, MomentumWeekdaySection.styles);
     }
 
     static styles = css`

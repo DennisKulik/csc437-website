@@ -43,7 +43,7 @@ export class LoginFormElement extends HTMLElement {
         event.preventDefault();
         const data = this.viewModel.toObject();
         const method = "POST";
-        const headers = {
+        const headers: HeadersInit = {
             "Content-Type": "application/json"
         };
         const body = JSON.stringify(data);

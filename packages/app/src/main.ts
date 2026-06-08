@@ -1,6 +1,11 @@
 import { define, html } from "@unbndl/html";
 import { Auth } from "@unbndl/auth";
+import { Store } from "@unbndl/store";
 import { BrowserHistory, Switch } from "@unbndl/switch";
+
+import { Msg } from "./messages.ts";
+import { Model, init } from "./model.ts";
+import update, { Cmd } from "./update.ts";
 
 import { MomentumHeader } from "./components/header-element.ts";
 import { MomentumTaskCard } from "./components/task-card.ts";
@@ -29,9 +34,14 @@ const routes: Switch.Route[] = [
 define ({
     "auth-provider": Auth.Provider,
     "history-provider": BrowserHistory.Provider,
-    "router-switch": class Appswitch extends Switch.Element {
+    "router-switch": class AppSwitch extends Switch.Element {
         constructor() {
             super(routes);
+        }
+    },
+    "store-provider": class AppStore extends Store.Provider<Model, Msg, Cmd> {
+        constructor() {
+        super(update, init);
         }
     },
 

@@ -2,6 +2,11 @@
 	"name": "server",
 	"version": "1.0.0",
 	"main": "src/index.ts",
+	"exports": {
+		"./models": {
+			"import": "./src/models/index.ts"
+		}
+	}, 
 	"type": "module",
 	"scripts": {
 		"dev": "nodemon",

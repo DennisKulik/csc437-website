@@ -6,8 +6,8 @@ export class HomeViewElement extends HTMLElement {
     static template = html`
         <template>
             <div class="page">
-                <momentum-tasks-holder src="/data/tasks.json"></momentum-tasks-holder>
-                <momentum-events-holder src="/api/events/2026-04-05"></momentum-events-holder>
+                <momentum-tasks-holder></momentum-tasks-holder>
+                <momentum-events-holder></momentum-events-holder>
             </div>
         </template>
     `;
