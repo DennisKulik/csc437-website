@@ -73,6 +73,9 @@
     --padding-standard: 1.25rem;    /* 20px */
     --padding-large: 1.5rem;        /* 24px */
     --padding-jumbo: 2rem;          /* 32px */
+    --padding-stupid: 6rem;         /* 96px */
+
+    --border-standard: 2px;
 }
 
 body.dark-mode {

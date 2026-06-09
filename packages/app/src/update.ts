@@ -5,6 +5,11 @@ import type { Events, Tasks, UserProfile } from "server/models";
 import type { Model } from "./model.ts";
 import type { Msg } from "./messages.ts";
 
+type SaveCallbacks = {
+    onSuccess?: () => void;
+    onFailure?: (err: Error) => void;
+};
+
 export type Cmd =
     | ["tasks/load", { tasks: Tasks }]
     | ["events/load", { events: Events }]
@@ -93,6 +98,23 @@ export default function update(
             ];
         }
 
+        case "user/save": {
+            return [
+                { ...model },
+                saveUser(payload.userid, payload.user, auth)
+                    .then((cmd) => {
+                        const callbacks = message[2];
+                        callbacks?.onSuccess?.();
+                        return cmd;
+                    })
+                    .catch((err: Error) => {
+                        const callbacks = message[2];
+                        callbacks?.onFailure?.(err);
+                        throw err;
+                    })
+            ];
+        }
+
         case "user/load":
             return {
                 ...model,
@@ -103,8 +125,9 @@ export default function update(
         // case "event/select":
 
         default: 
-            throw new Error(`Unhandled message "${type}"`);
-    }
+            const unhandled: never = type;
+            throw new Error(`Unhandled message "${unhandled}"`);    
+        }
 }
 
 function requestTasks(auth: Auth.Model): Promise<Cmd> {
@@ -179,6 +202,26 @@ function decodeJwtPayload(token: string): { username?: string } {
     );
 
     return JSON.parse(atob(padded));
+}
+
+function saveUser(
+    userid: string,
+    user: UserProfile,
+    auth: Auth.Model
+): Promise<Cmd> {
+    return fetch(`/api/users/${userid}`, {
+        method: "PUT",
+        headers: {
+            "Content-Type": "application/json",
+            ...authorization(auth)
+        },
+        body: JSON.stringify(user)
+    })
+        .then((res) => {
+            if (!res.ok) throw new Error(`User save failed: ${res.status}`);
+            return res.json();
+        })
+        .then((user: UserProfile) => ["user/load", { user }]);
 }
 
 function shiftWeek(weekid: string, days: number): string {

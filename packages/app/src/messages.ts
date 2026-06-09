@@ -9,6 +9,17 @@ export type Msg =
     | ["events/week-prev", {}]
     | ["user/request", {}]
     | ["user/load", { user: UserProfile }]
-    | ["task/select", { taskid: string }]
-    | ["event/select", { eventid: string }];
+    | [
+        "user/save",
+        {
+            userid: string;
+            user: UserProfile;
+        },
+        {
+            onSuccess?: () => void;
+            onFailure?: (err: Error) => void;
+        }
+    ]
+    // | ["task/select", { taskid: string }]
+    // | ["event/select", { eventid: string }];
     

@@ -19,12 +19,10 @@
         <script type="module" src="/src/main.ts"></script>
     </head>
     <body>
-        <!-- listens for clicks to prevent reload on navigation -->
         <history-provider>  
             <auth-provider redirect="/login.html">
                 <store-provider>
                     <momentum-header></momentum-header>
-                    <!-- loads new content based on url -->
                     <router-switch></router-switch>
                 </store-provider>
             </auth-provider>
