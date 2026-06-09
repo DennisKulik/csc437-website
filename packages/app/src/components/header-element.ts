@@ -1,6 +1,7 @@
 import { html, css, shadow, type Template } from "@unbndl/html";
 import { createViewModel } from "@unbndl/view";
 import { Auth, fromAuth } from "@unbndl/auth";
+
 import reset from "../styles/reset.css.js";
 import button from "../styles/button.css.ts";
 
@@ -20,7 +21,7 @@ export class MomentumHeader extends HTMLElement {
         <div class="header">
             <div class="header-left">
                 <svg class="icon-logo">
-                    <use href="icons/planning.svg#icon-spiral-main"></use>
+                    <use href="/icons/planning.svg#icon-spiral-main"></use>
                 </svg>
                 <h1>Momentum</h1>
             </div>
@@ -39,7 +40,7 @@ export class MomentumHeader extends HTMLElement {
                     ? html`
                         <a href="/app/user" class="logged-in">
                             <svg class="icon-logo">
-                                <use href="icons/planning.svg#icon-user-profile"></use>
+                                <use href="/icons/planning.svg#icon-user-profile"></use>
                             </svg>
                         </a>
                         <button type="button" class="button hover-lift signout-button">
@@ -68,6 +69,9 @@ export class MomentumHeader extends HTMLElement {
             });
 
         const darkModeHolder = this.shadowRoot!.getElementById("dark-mode-holder") as HTMLElement;
+        const darkModeToggle = this.shadowRoot!.getElementById("dark-mode-toggle") as HTMLInputElement;
+
+        darkModeToggle.checked = localStorage.getItem("dark-mode") === "true";
 
         darkModeHolder.addEventListener("change", (event) => {
             const target = event.target as HTMLInputElement | null;

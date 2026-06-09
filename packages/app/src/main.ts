@@ -15,12 +15,13 @@ import { MomentumEventsHolder } from "./components/events-holder.ts";
 import { MomentumTasksHolder } from "./components/tasks-holder.ts";
 
 import { HomeViewElement } from "./views/home-view.ts";
+import { UserViewElement } from "./views/user-view.ts";
 
 const routes: Switch.Route[] = [
-        // {
-        //     path: "app/user/",
-        //     view: html`<user-view></user-view>`
-        // },
+        {
+            path: "/app/user",
+            view: html`<user-view></user-view>`
+        },
         {
             path: "/app",
             view: html`<home-view></home-view>`
@@ -41,7 +42,7 @@ define ({
     },
     "store-provider": class AppStore extends Store.Provider<Model, Msg, Cmd> {
         constructor() {
-        super(update, init);
+            super(update, init);
         }
     },
 
@@ -52,5 +53,19 @@ define ({
     "momentum-events-holder": MomentumEventsHolder,
     "momentum-tasks-holder": MomentumTasksHolder,
 
-    "home-view": HomeViewElement
-})
+    "home-view": HomeViewElement,
+    "user-view": UserViewElement
+});
+
+const savedDarkMode = localStorage.getItem("dark-mode");
+if (savedDarkMode === "true") {
+    document.body.classList.add("dark-mode");
+}
+
+document.body.addEventListener("darkmode:toggle", (ev: Event) => {
+    const custom = ev as CustomEvent<{ checked: boolean }>;
+    const checked = custom.detail.checked;
+
+    document.body.classList.toggle("dark-mode", checked);
+    localStorage.setItem("dark-mode", String(checked));
+});

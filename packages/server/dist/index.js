@@ -1,6 +1,7 @@
 import { connect } from "./services/mongo.js";
 import express from "express";
 import EventsRouter from "./routes/events.js";
+import UsersRouter from "./routes/users.js";
 import auth from "./routes/auth.js";
 import { authenticateUser } from "./routes/auth.js";
 import fs from "node:fs/promises";
@@ -11,6 +12,7 @@ const staticDir = process.env.STATIC || "public";
 app.use(express.static(staticDir));
 app.use(express.json());
 app.use("/api/events", authenticateUser, EventsRouter);
+app.use("/api/users", authenticateUser, UsersRouter);
 app.use("/auth", auth);
 app.get("/hello", (req, res) => {
     res.send("Hello, World");

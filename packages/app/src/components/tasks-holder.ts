@@ -1,6 +1,6 @@
-import { html, css, shadow, type Template} from "@unbndl/html";
+import { html, css, shadow, type Template } from "@unbndl/html";
 import { createViewModel } from "@unbndl/view";
-import { Message, fromService } from "@unbndl/service";
+import { Store, fromStore } from "@unbndl/store";
 
 import type { Model } from "../model.ts";
 import reset from "../styles/reset.css.js";
@@ -14,8 +14,7 @@ type TaskCard = {
 export class MomentumTasksHolder extends HTMLElement {
 
     viewModel = createViewModel<Model>({})
-        .with(fromService<Model>(this, "store"));
-
+        .with(fromStore<Model>(this), "tasks");
 
     view: Template<[Model]> = html`
         <div class="task-box">
@@ -25,7 +24,7 @@ export class MomentumTasksHolder extends HTMLElement {
             </div>
 
             <ul class="task-list">
-                ${($) => ($.tasks?.tasks || []).map((task) => MomentumTasksHolder.renderTask(task as TaskCard))}
+                ${($) => ($.tasks?.tasks || []).map((task) => MomentumTasksHolder.renderTask(task as TaskCard))}            
             </ul>
         </div>
     `;
@@ -41,7 +40,7 @@ export class MomentumTasksHolder extends HTMLElement {
         const $ = this.viewModel.toObject();
 
         if (!$.tasks) {
-            Message.dispatch(this, "tasks/request", {});
+            Store.dispatch(this, ["tasks/request", {}]);
         }
     }
 

@@ -1,4 +1,4 @@
-import type { Events, Tasks } from "server/models";
+import type { Events, Tasks, UserProfile } from "server/models";
 
 export type Msg =
     | ["tasks/request", {}]
@@ -7,6 +7,8 @@ export type Msg =
     | ["events/load", { events: Events }]
     | ["events/week-next", {}]
     | ["events/week-prev", {}]
+    | ["user/request", {}]
+    | ["user/load", { user: UserProfile }]
     | ["task/select", { taskid: string }]
     | ["event/select", { eventid: string }];
     

@@ -1,8 +1,9 @@
-import type { Events, Tasks } from "server/models";
+import type { Events, Tasks, UserProfile } from "server/models";
 
 export interface Model {
     events?: Events;
     tasks?: Tasks;
+    user?: UserProfile;
     currentWeekId?: string;
 }
 

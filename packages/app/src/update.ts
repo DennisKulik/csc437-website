@@ -1,26 +1,27 @@
 import { Auth } from "@unbndl/auth";
 import { Message } from "@unbndl/service";
-import type { Events, Tasks } from "server/models";
+import type { Events, Tasks, UserProfile } from "server/models";
 
 import type { Model } from "./model.ts";
 import type { Msg } from "./messages.ts";
 
 export type Cmd =
     | ["tasks/load", { tasks: Tasks }]
-    | ["events/load", { events: Events }];
+    | ["events/load", { events: Events }]
+    | ["user/load", { user: UserProfile }];
 
 export default function update(
     model: Readonly<Model>,
     message: Msg | Cmd,
-    user: Auth.User
-): Model | Message.Async<Model, Msg | Cmd> {
+    auth: Auth.Model
+): Model | Message.Async<Model, Cmd> {
     const [type, payload] = message;
 
     switch (type) {
         case "tasks/request":
             return [
                 { ...model },
-                requestTasks(user)
+                requestTasks(auth)
             ];
         
         case "tasks/load":
@@ -38,7 +39,7 @@ export default function update(
                 { ...model,
                     currentWeekId: payload.weekid
                 },
-                requestEvents(payload.weekid, user)
+                requestEvents(payload.weekid, auth)
             ];
         
         case "events/load":
@@ -57,7 +58,7 @@ export default function update(
                     ...model,
                     currentWeekId: nextWeekId
                 },
-                requestEvents(nextWeekId, user)
+                requestEvents(nextWeekId, auth)
             ];
         }
 
@@ -70,10 +71,34 @@ export default function update(
                     ...model,
                     currentWeekId: previousWeekId
                 },
-                requestEvents(previousWeekId, user)
+                requestEvents(previousWeekId, auth)
             ];
         }
 
+        case "user/request": {
+            const userid = getUseridFromAuth(auth);
+
+            if (!userid) {
+                console.warn("Cannot request user profile: no authenticated userid");
+                return { ...model };
+            }
+
+            if (model.user?.userid === userid) {
+                return { ...model };
+            }
+
+            return [
+                { ...model },
+                requestUser(userid, auth)
+            ];
+        }
+
+        case "user/load":
+            return {
+                ...model,
+                user: payload.user
+            };
+        
         // case "task/select":
         // case "event/select":
 
@@ -82,9 +107,9 @@ export default function update(
     }
 }
 
-function requestTasks(user: Auth.User): Promise<Cmd> {
+function requestTasks(auth: Auth.Model): Promise<Cmd> {
     return fetch("/api/tasks", {
-        headers: authorization(user)
+        headers: authorization(auth)
     })
         .then((res) => {
             if (!res.ok) throw new Error(`Tasks request failed: ${res.status}`);
@@ -93,9 +118,9 @@ function requestTasks(user: Auth.User): Promise<Cmd> {
         .then((tasks: Tasks) => ["tasks/load", { tasks }]);
 }
 
-function requestEvents(weekid: string, user: Auth.User): Promise<Cmd> {
+function requestEvents(weekid: string, auth: Auth.Model): Promise<Cmd> {
     return fetch(`/api/events/${weekid}`, {
-        headers: authorization(user)
+        headers: authorization(auth)
     })
         .then((res) => {
             if (!res.ok) throw new Error(`Events request failed: ${res.status}`);
@@ -104,16 +129,56 @@ function requestEvents(weekid: string, user: Auth.User): Promise<Cmd> {
         .then((events: Events) => ["events/load", { events }]);
 }
 
-function authorization(user: Auth.User): HeadersInit {
-    if (user.authenticated) {
-        const authenticatedUser = user as Auth.AuthenticatedUser;
-        
+function requestUser(userid: string, auth: Auth.Model): Promise<Cmd> {
+    return fetch(`/api/users/${userid}`, {
+        headers: authorization(auth)
+    })
+        .then((res) => {
+            if (!res.ok) throw new Error(`User request failed: ${res.status}`);
+            return res.json();
+        })
+        .then((user: UserProfile) => ["user/load", { user }]);
+}
+
+function authorization(auth: Auth.Model): HeadersInit {
+    if (auth.authenticated) {
+        const authenticatedUser = auth as Auth.AuthenticatedUser;
         return {
             Authorization: `Bearer ${authenticatedUser.token}`
         };
     }
 
     return {};
+}
+
+
+function getUseridFromAuth(auth: Auth.Model): string | undefined {
+    if (!auth.authenticated) return undefined;
+
+    const authenticatedUser = auth as Auth.AuthenticatedUser;
+    const token = authenticatedUser.token;
+
+    if (!token) return undefined;    
+    const payload = decodeJwtPayload(token);
+
+    return payload.username;
+}
+
+function decodeJwtPayload(token: string): { username?: string } {
+    const [, payload] = token.split(".");
+
+    if (!payload) return {};
+
+    const base64 = payload
+        .replace(/-/g, "+")
+        .replace(/_/g, "/");
+
+    const padded = base64.padEnd(
+        base64.length + ((4 - base64.length % 4) % 4),
+        "="
+    );
+
+    return JSON.parse(atob(padded));
 }
 
 function shiftWeek(weekid: string, days: number): string {

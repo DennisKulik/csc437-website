@@ -1,13 +1,13 @@
 import express, { Request, Response } from "express";
-import { Events } from "../models";
+import { UserProfile } from "../models";
 
-import EventsSvc from "../services/events-svc.ts";
+import UsersSvc from "../services/user-svc.ts";
 
 const router = express.Router();
 
-router.get("/", (_, res: Response) => {
-    EventsSvc.index()
-        .then((list: Events[]) => res.send(list))
+router.get("/", (_: Request, res: Response) => {
+    UsersSvc.index()
+        .then((list: UserProfile[]) => res.send(list))
         .catch((err) => res.status(500).send(err));
 });
 
@@ -19,37 +19,37 @@ router.get("/:id", (req: Request, res: Response) => {
         return;
     }
 
-    EventsSvc.get(id)
-        .then((event: Events | undefined) => {
-            if (!event) res.status(404).send();
-            else res.send(event)
+    UsersSvc.get(id)
+        .then((profile: UserProfile | undefined) => {
+            if (!profile) res.status(404).send();
+            else res.send(profile);
         })
         .catch((err) => res.status(404).send(err));
 });
 
 router.post("/", (req: Request, res: Response) => {
-    const newEvents = req.body;
+    const newProfile = req.body;
 
-    EventsSvc.create(newEvents)
-        .then((events: Events) => res.status(201).json(events))
+    UsersSvc.create(newProfile)
+        .then((profile: UserProfile) => res.status(201).json(profile))
         .catch((err) => res.status(500).send(err));
 });
 
 router.put("/:id", (req: Request, res: Response) => {
     const { id } = req.params;
-    const newEvents = req.body;
+    const newProfile = req.body;
 
     if (Array.isArray(id)) {
         res.status(400).send();
         return;
     }
 
-    EventsSvc.update(id, newEvents)
-        .then((events: Events | undefined) => {
-            if (!events) res.status(404).end();
-            else res.json(events);
+    UsersSvc.update(id, newProfile)
+        .then((profile: UserProfile | undefined) => {
+            if (!profile) res.status(404).end();
+            else res.json(profile);
         })
-        .catch((err) => res.status(404).end());
+        .catch((err) => res.status(404).send(err));
 });
 
 router.delete("/:id", (req: Request, res: Response) => {
@@ -60,7 +60,7 @@ router.delete("/:id", (req: Request, res: Response) => {
         return;
     }
 
-    EventsSvc.remove(id)
+    UsersSvc.remove(id)
         .then(() => res.status(204).end())
         .catch((err) => res.status(404).send(err));
 });

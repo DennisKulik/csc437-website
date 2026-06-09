@@ -1,0 +1,184 @@
+import { css } from "@unbndl/html";
+
+const styles = css`
+    /* User Info */
+    .user-info {
+        grid-column: start / span 6;
+        width: auto;
+
+        display: flex;
+        flex-direction: column;
+
+        margin: var(--padding-small); /* Space around the task-box */
+        padding: var(--padding-standard); /* Space inside the task-box */
+        padding-top: var(--padding-small);
+        background-color: var(--color-secondary);
+    }
+
+    .user-info-container {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: var(--padding-small);
+    }
+
+    @media (max-width: 1000px) {
+        .user-info-container {
+            grid-template-columns: 1fr 1fr;
+        }
+    }
+
+    @media (max-width: 700px) {
+        .user-info-container {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    .user-info h2 {
+        color: var(--text-primary);
+        font-family: var(--font-primary);
+        font-weight: 700;
+        font-size: 30px;
+        font-style: normal;
+        border-bottom: 2px solid var(--color-primary);
+    }
+
+    .user-info h3 {
+        color: var(--text-primary);
+        font-family: var(--font-secondary);
+        font-weight: 700;
+        font-size: 20px;
+        font-style: normal;
+        border-bottom: 2px solid var(--color-primary);
+    }
+
+    .user-info label {
+        color: var(--text-primary);
+        font-family: var(--font-secondary);
+        font-weight: 400;
+        font-size: 20px;
+        font-style: normal;
+
+    }
+
+    .user-section {
+        display: grid;
+        grid-template-rows: 2.5rem auto;
+        gap: var(--padding-mini);
+        margin: var(--padding-mini);
+        min-width: 0;
+    }
+
+    .user-section h3 {
+        display: flex;
+        align-items: end;
+    }
+
+    .user-section-body {
+        display: grid;
+        gap: var(--padding-mini);
+        grid-auto-rows: minmax(4.5rem, auto);
+    }
+
+    .user-section-body.stats-list {
+        gap: var(--padding-standard);
+        grid-auto-rows: max-content;
+        align-content: start;
+    }
+
+
+    .field {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: var(--padding-mini);
+    }
+
+    .field input {
+        width: 100%;
+        min-width: 0;
+    
+        font: inherit;
+        color: var(--text-primary);
+        background-color: var(--color-background);
+
+        padding: var(--padding-mini);
+        border: 2px solid var(--color-primary);
+        border-radius: var(--padding-mini);
+    }
+
+    
+    .stat-row {
+        display: grid;
+        align-content: start;
+        color: var(--text-primary);
+    }
+
+    /* Profile Picture */
+    .profile-picture-holder {
+        grid-column: 7 / span 2;
+        margin: var(--padding-small);
+        overflow: hidden;
+        aspect-ratio: 1 / 1;
+    }
+
+    .profile-picture-holder img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+    }
+
+
+
+    .event-container {
+        margin: 20px;
+        padding: 20px;
+        background-color: var(--color-secondary);
+
+        grid-column: start / span 3;
+        width: auto;
+    }
+
+    /* Responsive Sizing */
+    @media (min-width: 1600px) {
+        .field {
+            grid-template-columns: 140px 1fr;
+            align-items: center;
+            gap: var(--padding-small);
+        }
+    }
+
+    @media (max-width: 1100px) {
+        .user-info {
+            grid-column: start / end;
+        }
+
+        .profile-picture-holder {
+            grid-column: start / end;
+            max-width: 300px;
+            justify-self: center;
+        }
+    }
+
+    @media (max-width: 900px) {
+        .user-info {
+            grid-column: 1fr;
+        }
+    }
+
+    @media (max-width: 700px) {
+        .field {
+            grid-template-columns: 1fr;
+            align-items: stretch;
+        }
+
+        .field label {
+            margin-bottom: 0.25rem;
+        }
+
+        .user-info {
+            padding: var(--padding-small);
+        }
+    }
+`;
+
+export default { styles };

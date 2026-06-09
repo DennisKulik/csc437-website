@@ -1,6 +1,6 @@
 import { html, css, shadow, type Template } from "@unbndl/html";
 import { createViewModel } from "@unbndl/view";
-import { Message, fromService } from "@unbndl/service";
+import { Store, fromStore } from "@unbndl/store";
 
 import type { Model } from "../model.ts";
 import reset from "../styles/reset.css.js";
@@ -20,8 +20,8 @@ type Weekday = {
 export class MomentumEventsHolder extends HTMLElement {
 
     viewModel = createViewModel<Model>({})
-        .with(fromService<Model>(this, "store"));
-    
+        .with(fromStore<Model>(this), "events", "currentWeekId");
+
     view: Template<[Model]> = html`
         <div class="events-holder">
             <div class="section-header">
@@ -53,19 +53,20 @@ export class MomentumEventsHolder extends HTMLElement {
             .styles(reset.styles, button.styles, MomentumEventsHolder.styles)
             .replace(this.viewModel.render(this.view))
             .delegate(".prev-week-button", {
-                click: () => Message.dispatch(this, "events/week-prev", {})
+                click: () => Store.dispatch(this, ["events/week-prev", {}])
             })
             .delegate(".next-week-button", {
-                click: () => Message.dispatch(this, "events/week-next", {})
+                click: () => Store.dispatch(this, ["events/week-next", {}])
             });
     }
 
     connectedCallback() {
         const $ = this.viewModel.toObject();
         const weekid = $.currentWeekId || $.events?.id || MomentumEventsHolder.getCurrentWeekId();
+        console.log("events-holder connected", this.closest("store-provider"));
 
         if (!$.events) {
-            Message.dispatch(this, "events/request", { weekid });
+            Store.dispatch(this, ["events/request", { weekid }]);
         }
     }
 
