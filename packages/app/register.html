@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>Register</title>
+    
+    <!-- Styles -->
+    <link rel="stylesheet" href="/styles/reset.css"/>
+    <link rel="stylesheet" href="/styles/tokens.css"/>
+    <link rel="stylesheet" href="/styles/page.css"/>
+    <link rel="stylesheet" href="/styles/login.css" />
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Almendra:ital,wght@0,400;0,700;1,400;1,700&family=Josefin+Slab:ital,wght@0,100..700;1,100..700&display=swap" rel="stylesheet">
+    <!-- Favicon -->
+    <link rel="apple-touch-icon" sizes="180x180" href="/icons/favicon/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/icons/favicon/favicon-16x16.png">
+    <link rel="manifest" href="/icons/favicon/site.webmanifest">
+
+    <script type="module" src="/src/register.ts"></script>
+</head>
+
+<body>
+    <auth-provider>
+        <momentum-header></momentum-header>
+        <main class="page">
+            <h2>Create Account</h2>
+
+            <main class="card border-mini">
+                <register-form api="/auth/register" class="register-form">
+                    <div class="register-layout">
+                        <div>
+                            <label>
+                                Username:
+                                <input type="text" name="username" autocomplete="username" required />
+                            </label>
+                        </div>
+
+                        <div>
+                            <label>
+                                Display Name:
+                                <input type="text" name="displayName" autocomplete="name" required />
+                            </label>
+                        </div>
+
+                        <div>
+                            <label>
+                                Bio:
+                                <textarea name="bio"></textarea>
+                            </label>
+                        </div>
+
+                        <div>
+                            <label>
+                                Profile Picture URL:
+                                <input type="text" name="profilePicture" />
+                            </label>
+                        </div>
+
+                        <div>
+                            <label>
+                                Password:
+                                <input type="password" name="password" autocomplete="new-password" required />
+                            </label>
+                        </div>
+                        <span slot="submit-label">Create Account</span>
+                    </div>
+                </register-form>
+            </main>
+            <p>
+                Already have an account?
+                <a href="/login.html">Log in</a>
+            </p>
+        </main>
+    </auth-provider>
+</body>
+</html>

@@ -1,9 +1,9 @@
 import { Events } from "../models";
-declare function index(): Promise<Events[]>;
-declare function get(id: string): Promise<Events | undefined>;
-declare function create(json: Events): Promise<Events>;
-declare function update(id: string, events: Events): Promise<Events | undefined>;
-declare function remove(id: string): Promise<void>;
+declare function index(userid: string): Promise<Events[]>;
+declare function get(id: string, userid: string): Promise<Events | undefined>;
+declare function create(json: Events, userid: string): Promise<Events>;
+declare function update(id: string, events: Events, userid: string): Promise<Events | undefined>;
+declare function remove(id: string, userid: string): Promise<void>;
 declare const _default: {
     index: typeof index;
     get: typeof get;

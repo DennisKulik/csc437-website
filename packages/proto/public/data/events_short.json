@@ -1,0 +1,54 @@
+{
+  "id": "2026-04-12",
+  "userid": "denni",
+  "week": "2026-04-12",
+  "weekdays": [
+    {
+      "day": "Monday",
+      "oneTimeEvents": [
+        {
+          "title": "Big Bonfire",
+          "href": "event.html",
+          "disabled": false
+        }
+      ],
+      "recurringEvents": [
+        {
+          "title": "Web Dev Class",
+          "href": "",
+          "disabled": true
+        }
+      ]
+    },
+    {
+      "day": "Tuesday",
+      "oneTimeEvents": [],
+      "recurringEvents": []
+    },
+    {
+      "day": "Wednesday",
+      "oneTimeEvents": [],
+      "recurringEvents": []
+    },
+    {
+      "day": "Thursday",
+      "oneTimeEvents": [],
+      "recurringEvents": []
+    },
+    {
+      "day": "Friday",
+      "oneTimeEvents": [],
+      "recurringEvents": []
+    },
+    {
+      "day": "Saturday",
+      "oneTimeEvents": [],
+      "recurringEvents": []
+    },
+    {
+      "day": "Sunday",
+      "oneTimeEvents": [],
+      "recurringEvents": []
+    }
+  ]
+}

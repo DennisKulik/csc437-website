@@ -10,35 +10,42 @@ const weekdaySchema = new Schema({
 }, { _id: false });
 const eventsSchema = new Schema({
     id: String,
+    userid: String,
     week: Date,
     weekdays: [weekdaySchema]
 }, { collection: "events" });
 const EventsModel = model("Events", eventsSchema);
-function index() {
-    return EventsModel.find();
+function index(userid) {
+    return EventsModel.find({ userid });
 }
-function get(id) {
-    return EventsModel.find({ id })
+function get(id, userid) {
+    return EventsModel.find({ id, userid })
         .then((list) => list[0])
-        .catch((err) => {
+        .catch(() => {
         throw `${id} Not Found`;
     });
 }
-function create(json) {
-    const t = new EventsModel(json);
-    return t.save();
+function create(json, userid) {
+    const events = new EventsModel({
+        ...json,
+        userid
+    });
+    return events.save();
 }
-function update(id, events) {
-    return EventsModel.findOneAndUpdate({ id }, events, { new: true })
-        .then((updated) => {
+function update(id, events, userid) {
+    return EventsModel.findOneAndUpdate({ id, userid }, {
+        ...events,
+        id,
+        userid
+    }, { new: true }).then((updated) => {
         if (!updated)
             throw `${id} not updated`;
         else
             return updated;
     });
 }
-function remove(id) {
-    return EventsModel.findOneAndDelete({ id })
+function remove(id, userid) {
+    return EventsModel.findOneAndDelete({ id, userid })
         .then((deleted) => {
         if (!deleted)
             throw `${id} not deleted`;

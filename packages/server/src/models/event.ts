@@ -1,5 +1,6 @@
 export interface Events {
     id: string;
+    userid: string;
     week: Date;
     weekdays: Array<Weekday>;
 }

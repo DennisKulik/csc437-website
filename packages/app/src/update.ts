@@ -41,7 +41,9 @@ export default function update(
             }
 
             return [
-                { ...model,
+                {
+                    ...model,
+                    events: undefined,
                     currentWeekId: payload.weekid
                 },
                 requestEvents(payload.weekid, auth)
@@ -61,6 +63,7 @@ export default function update(
             return [
                 {
                     ...model,
+                    events: undefined,
                     currentWeekId: nextWeekId
                 },
                 requestEvents(nextWeekId, auth)
@@ -74,6 +77,7 @@ export default function update(
             return [
                 {
                     ...model,
+                    events: undefined,
                     currentWeekId: previousWeekId
                 },
                 requestEvents(previousWeekId, auth)
@@ -146,7 +150,13 @@ function requestEvents(weekid: string, auth: Auth.Model): Promise<Cmd> {
         headers: authorization(auth)
     })
         .then((res) => {
-            if (!res.ok) throw new Error(`Events request failed: ${res.status}`);
+            if (res.status === 404) {
+                return emptyEvents(weekid);
+            }
+
+            if (!res.ok) {
+                throw new Error(`Events request failed: ${res.status}`);
+            }
             return res.json();
         })
         .then((events: Events) => ["events/load", { events }]);
@@ -242,4 +252,13 @@ function toWeekId(date: Date): string {
     const month = String(date.getMonth() + 1).padStart(2, "0");
     const day = String(date.getDate()).padStart(2, "0");
     return `${year}-${month}-${day}`;
+}
+
+function emptyEvents(weekid: string): Events {
+    return {
+        id: weekid,
+        userid: "",
+        week: new Date(`${weekid}T00:00:00`),
+        weekdays: []
+    };
 }

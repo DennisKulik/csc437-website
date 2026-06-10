@@ -53,10 +53,17 @@ export function authenticateUser(req, res, next) {
     }
     else {
         jwt.verify(token, TOKEN_SECRET, (error, decoded) => {
-            if (decoded)
-                next();
-            else
+            if (error || !decoded || typeof decoded === "string") {
                 res.status(401).end();
+                return;
+            }
+            const { username } = decoded;
+            if (!username) {
+                res.status(401).end();
+                return;
+            }
+            req.user = { username };
+            next();
         });
     }
 }

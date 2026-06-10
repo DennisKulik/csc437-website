@@ -21,6 +21,7 @@ const weekdaySchema = new Schema(
 const eventsSchema = new Schema(
     {
         id: String,
+        userid: String,
         week: Date,
         weekdays: [weekdaySchema]
     },
@@ -32,37 +33,44 @@ const EventsModel = model<Events>(
     eventsSchema
 );
 
-
-function index(): Promise<Events[]> {
-    return EventsModel.find();
+function index(userid: string): Promise<Events[]> {
+    return EventsModel.find({ userid });
 }
 
-function get(id: string): Promise<Events | undefined> {
-    return EventsModel.find({ id })
+function get(id: string, userid: string): Promise<Events | undefined> {
+    return EventsModel.find({ id, userid })
         .then((list) => list[0])
-        .catch((err) => {
+        .catch(() => {
             throw `${id} Not Found`;
         });
 }
 
-function create(json: Events): Promise<Events> {
-    const t = new EventsModel(json);
-    return t.save();
+function create(json: Events, userid: string): Promise<Events> {
+    const events = new EventsModel({
+        ...json,
+        userid
+    });
+
+    return events.save();
 }
 
-function update(id: string, events: Events): Promise<Events | undefined> {
+function update(id: string, events: Events, userid: string): Promise<Events | undefined> {
     return EventsModel.findOneAndUpdate(
-        { id },
-        events,
-        { new: true })
-        .then((updated) => {
-            if (!updated) throw `${id} not updated`;
-            else return updated as Events;
-        });
+        { id, userid },
+        {
+            ...events,
+            id,
+            userid
+        },
+        { new: true }
+    ).then((updated) => {
+        if (!updated) throw `${id} not updated`;
+        else return updated as Events;
+    });
 }
 
-function remove(id: string): Promise<void> {
-    return EventsModel.findOneAndDelete({ id })
+function remove(id: string, userid: string): Promise<void> {
+    return EventsModel.findOneAndDelete({ id, userid })
         .then((deleted) => {
             if (!deleted) throw `${id} not deleted`;
         });

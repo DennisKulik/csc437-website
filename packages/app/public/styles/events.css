@@ -1,0 +1,234 @@
+.header {
+    grid-column: start / end;
+    display: flex;
+    background-color: var(--color-primary);
+    padding: var(--padding-mini) var(--padding-small) var(--padding-tiny);
+    align-items: center;
+    justify-content: space-between;
+}
+
+.header-left {
+    display: flex;
+    align-items: center;
+    gap: var(--padding-small);
+}
+
+.header-left h1 {
+    font-size: 50px;
+}
+
+.header-right {
+    display: flex;
+    align-items: center;
+    gap: var(--padding-small);
+}
+
+.header-right a {
+    font-size: 24px;
+}
+
+.header-right label {
+    color: var(--text-primary);
+    font-size: 22px;
+    font-weight: 500;
+}
+
+/* Icons */
+
+svg.icon {
+    display: inline;
+    height: 2.5rem;
+    width: 2.5rem;
+    vertical-align: middle;
+    fill: currentColor;
+}
+
+svg.icon-logo {
+    display: inline-block;
+    height: 4.5rem;
+    width: 4.5rem;
+    color: var(--text-primary);
+    fill: currentColor;
+}
+
+.event-detail {
+    background-color: var(--color-secondary);
+}
+
+.event-detail .detail-status {
+    background-color: var(--color-primary);
+}
+
+.event-detail .details {
+    padding: var(--padding-small);
+    border-radius: var(--padding-standard);
+}
+
+.event-detail .details a {
+    font-size: 22px;
+    text-shadow: 0 0 1px currentColor;
+}
+
+.event-detail .detail-section {
+    background-color: var(--color-background);
+    padding: var(--padding-small);
+    border-radius: var(--padding-mini);
+}
+
+.event-detail .detail-badge {
+    background-color: var(--color-tertiary);
+    position: relative;
+}
+
+.event-detail .detail-badge .color-picker {
+    position: absolute;
+    top: var(--padding-mini);
+    right: var(--padding-mini);
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.event-detail .detail-badge .color-picker input[type="color"] {
+    width: 1.5rem;
+    height: 1.5rem;
+    padding: 0;
+    border: 1px solid var(--color-accent-dark);
+    border-radius: var(--padding-mini);
+    background: var(--color-background);
+    cursor: pointer;
+}
+
+.event-detail .detail-image {
+    padding: 0;
+    overflow: hidden;
+    background-color: var(--color-tertiary);
+}
+
+.event-detail .detail-image img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.detail-panel {
+    grid-column: 5 / end;
+    
+    display: flex;
+    flex-direction: column;
+    gap: var(--padding-standard);
+
+    margin: var(--padding-standard);
+    padding: var(--padding-standard);
+
+    background-color: var(--color-secondary);
+    color: var(--text-primary);
+
+    border-radius: var(--padding-small);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.detail-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: var(--padding-small);
+
+    border-bottom: 2px solid var(--color-accent-dark);
+    padding-bottom: var(--padding-small);
+}
+
+.detail-title-group {
+    display: flex;
+    flex-direction: column;
+    gap: var(--padding-mini);
+}
+
+.detail-type {
+    margin: 0;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text-primary);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.detail-header h2 {
+    color: var(--text-primary);
+}
+
+.detail-status {
+    padding: var(--padding-mini) var(--padding-small);
+    border-radius: var(--padding-small);
+    background-color: var(--color-primary);
+    color: var(--text-primary);
+    font-size: 20px;
+    font-weight: 600;
+}
+
+.detail-meta {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    background-color: var(--color-secondary);
+    place-items: center;
+    gap: var(--padding-mini);
+}
+
+.detail-meta p {
+    margin: 0;
+}
+
+.details {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    place-items: center;
+    background-color: var(--color-primary);
+}
+
+
+.detail-section {
+    display: flex;
+    flex-direction: column;
+    gap: var(--padding-mini);
+}
+
+.detail-section h3 {
+    color: var(--text-primary);
+}
+
+.detail-section p,
+.detail-section ul {
+    margin: 0;
+}
+
+.detail-section ul {
+    padding-left: var(--padding-standard);
+}
+
+.detail-section li + li {
+    margin-top: var(--padding-tiny);
+}
+
+.detail-media img {
+    display: block;
+    width: 100%;
+    max-height: 250px;
+    object-fit: cover;
+    border-radius: var(--padding-small);
+}
+
+@media (max-width: 1000px) {
+    .detail-panel {
+        grid-column: 2 / end;
+    }
+}
+
+@media (max-width: 760px) {
+    .detail-panel {
+        grid-column: start / end;
+    }
+}

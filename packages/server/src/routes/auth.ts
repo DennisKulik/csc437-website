@@ -8,6 +8,18 @@ import jwt from "jsonwebtoken";
 
 import credentials from "../services/credential-svc.ts";
 
+type AuthTokenPayload = {
+    username: string;
+};
+
+declare global {
+    namespace Express {
+        interface Request {
+            user?: AuthTokenPayload;
+        }
+    }
+}
+
 const router = express.Router();
 
 dotenv.config();
@@ -72,8 +84,20 @@ export function authenticateUser(
         res.status(401).end();
     } else {
         jwt.verify(token, TOKEN_SECRET, (error, decoded) => {
-            if (decoded) next();
-            else res.status(401).end();
+            if (error || !decoded || typeof decoded === "string") {
+                res.status(401).end();
+                return;
+            }
+
+            const { username } = decoded as AuthTokenPayload;
+
+            if (!username) {
+                res.status(401).end();
+                return;
+            }
+
+            req.user = { username };
+            next();
         });
     }
 }
