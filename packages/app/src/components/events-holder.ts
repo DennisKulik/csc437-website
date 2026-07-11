@@ -89,11 +89,12 @@ export class MomentumEventsHolder extends HTMLElement {
     }
 
     static renderEvent(event: EventCard, slotName: string) {
-        const { title, href } = event;
+        const { title } = event;
+        const eventHref = `/app/event?event=${encodeURIComponent(title)}`;
 
         return html`
             <li slot=${slotName}>
-                <momentum-event-card href=${href}>
+                <momentum-event-card href=${eventHref}>
                     ${title}
                 </momentum-event-card>
             </li>

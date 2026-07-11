@@ -16,11 +16,16 @@ import { MomentumTasksHolder } from "./components/tasks-holder.ts";
 
 import { HomeViewElement } from "./views/home-view.ts";
 import { UserViewElement } from "./views/user-view.ts";
+import { EventViewElement } from "./views/event-view.ts";
 
 const routes: Switch.Route[] = [
         {
             path: "/app/user",
             view: html`<user-view></user-view>`
+        },
+        {
+            path: "/app/event",
+            view: html`<event-view></event-view>`
         },
         {
             path: "/app",
@@ -54,7 +59,8 @@ define ({
     "momentum-tasks-holder": MomentumTasksHolder,
 
     "home-view": HomeViewElement,
-    "user-view": UserViewElement
+    "user-view": UserViewElement,
+    "event-view": EventViewElement
 });
 
 const savedDarkMode = localStorage.getItem("dark-mode");
