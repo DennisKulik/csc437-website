@@ -27,17 +27,21 @@ export class EventViewElement extends HTMLElement {
                 <div class="event-layout">
                     <aside class="event-list card border-small" aria-label="Events">
                         <div class="list-header">
-                            <p class="eyebrow">This week</p>
+                            <p class="eyebrow">${($) => `Week of ${this.formatWeek($.currentWeekId || $.events?.id)}`}</p>
                             <h2>Events</h2>
                         </div>
 
-                        <ul>
+                        <ul class="event-groups">
                             ${($) => {
                                 const events = this.getEventList($.events);
                                 const selectedTitle = this.getSelectedTitle(events);
 
+                                const weekid = $.currentWeekId || $.events?.id || EventViewElement.getCurrentWeekId();
+
                                 return events.length
-                                    ? events.map((event) => this.renderEventListItem(event, selectedTitle))
+                                    ? this.groupEventsByDay(events).map((group) =>
+                                        this.renderEventGroup(group.day, group.events, selectedTitle, weekid)
+                                    )
                                     : html`<li class="empty-list">No events this week.</li>`;
                             }}
                         </ul>
@@ -86,9 +90,11 @@ export class EventViewElement extends HTMLElement {
     connectedCallback() {
         const $ = this.viewModel.toObject();
 
-        if (!$.events) {
+        const weekid = this.getRequestedWeekId() || $.currentWeekId || EventViewElement.getCurrentWeekId();
+
+        if ($.events?.id !== weekid) {
             Store.dispatch(this, ["events/request", {
-                weekid: $.currentWeekId || EventViewElement.getCurrentWeekId()
+                weekid
             }]);
         }
     }
@@ -114,9 +120,45 @@ export class EventViewElement extends HTMLElement {
         return requestedTitle || events[0]?.title || "Event details";
     }
 
-    renderEventListItem(event: EventSummary, selectedTitle: string) {
+    getRequestedWeekId(): string | null {
+        return new URLSearchParams(window.location.search).get("week");
+    }
+
+    formatWeek(weekid: string | undefined): string {
+        return weekid || "selected week";
+    }
+
+    groupEventsByDay(events: EventSummary[]): Array<{ day: string; events: EventSummary[] }> {
+        const groups = new Map<string, EventSummary[]>();
+
+        events.forEach((event) => {
+            const eventsForDay = groups.get(event.day) || [];
+            eventsForDay.push(event);
+            groups.set(event.day, eventsForDay);
+        });
+
+        return Array.from(groups, ([day, events]) => ({ day, events }));
+    }
+
+    renderEventGroup(
+        day: string,
+        events: EventSummary[],
+        selectedTitle: string,
+        weekid: string
+    ) {
+        return html`
+            <li class="day-group">
+                <h3>${day}</h3>
+                <ul class="day-events">
+                    ${events.map((event) => this.renderEventListItem(event, selectedTitle, weekid))}
+                </ul>
+            </li>
+        `;
+    }
+
+    renderEventListItem(event: EventSummary, selectedTitle: string, weekid: string) {
         const isSelected = event.title === selectedTitle;
-        const eventHref = `/app/event?event=${encodeURIComponent(event.title)}`;
+        const eventHref = `/app/event?event=${encodeURIComponent(event.title)}&week=${encodeURIComponent(weekid)}`;
 
         if (isSelected) {
             return html`
@@ -206,13 +248,28 @@ export class EventViewElement extends HTMLElement {
             font-size: 32px;
         }
 
-        ul {
+        .event-groups,
+        .day-events {
             display: flex;
             flex-direction: column;
             gap: var(--padding-mini);
             padding: 0;
-            margin: var(--padding-standard) 0 0;
             list-style: none;
+        }
+
+        .event-groups {
+            margin: var(--padding-standard) 0 0;
+        }
+
+        .day-group + .day-group {
+            padding-top: var(--padding-standard);
+            border-top: 1px solid var(--color-accent-dark);
+        }
+
+        .day-group h3 {
+            margin: 0 0 var(--padding-mini);
+            color: var(--text-primary);
+            font-size: 20px;
         }
 
         .event-list-item {

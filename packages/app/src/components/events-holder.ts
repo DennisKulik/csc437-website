@@ -18,6 +18,15 @@ type Weekday = {
 };
 
 export class MomentumEventsHolder extends HTMLElement {
+    static weekdays = [
+        "Sunday",
+        "Monday",
+        "Tuesday",
+        "Wednesday",
+        "Thursday",
+        "Friday",
+        "Saturday"
+    ];
 
     viewModel = createViewModel<Model>({})
         .with(fromStore<Model>(this), "events", "currentWeekId");
@@ -39,10 +48,14 @@ export class MomentumEventsHolder extends HTMLElement {
             </div>
 
             <div class="weekday-list">
-                ${($) =>
-                    ($.events?.weekdays || []).map((weekday) =>
-                        MomentumEventsHolder.renderWeekday(weekday as Weekday)
-                    )}
+                ${($) => {
+                    const weekid = $.currentWeekId || $.events?.id || MomentumEventsHolder.getCurrentWeekId();
+                    const weekdays = MomentumEventsHolder.getWeekdays($.events?.weekdays as Weekday[] | undefined);
+
+                    return weekdays.map((weekday) =>
+                        MomentumEventsHolder.renderWeekday(weekday, weekid)
+                    );
+                }}
             </div>
         </div>
     `;
@@ -62,10 +75,11 @@ export class MomentumEventsHolder extends HTMLElement {
 
     connectedCallback() {
         const $ = this.viewModel.toObject();
-        const weekid = $.currentWeekId || $.events?.id || MomentumEventsHolder.getCurrentWeekId();
+        const requestedWeekId = new URLSearchParams(window.location.search).get("week");
+        const weekid = requestedWeekId || $.currentWeekId || $.events?.id || MomentumEventsHolder.getCurrentWeekId();
         console.log("events-holder connected", this.closest("store-provider"));
 
-        if (!$.events) {
+        if ($.events?.id !== weekid) {
             Store.dispatch(this, ["events/request", { weekid }]);
         }
     }
@@ -88,9 +102,9 @@ export class MomentumEventsHolder extends HTMLElement {
         return week.slice(0, 10);
     }
 
-    static renderEvent(event: EventCard, slotName: string) {
+    static renderEvent(event: EventCard, slotName: string, weekid: string) {
         const { title } = event;
-        const eventHref = `/app/event?event=${encodeURIComponent(title)}`;
+        const eventHref = `/app/event?event=${encodeURIComponent(title)}&week=${encodeURIComponent(weekid)}`;
 
         return html`
             <li slot=${slotName}>
@@ -101,7 +115,23 @@ export class MomentumEventsHolder extends HTMLElement {
         `;
     }
     
-    static renderWeekday(weekday: Weekday) {
+    static getWeekdays(weekdays: Weekday[] | undefined): Weekday[] {
+        const weekdaysByName = new Map(
+            (weekdays || []).map((weekday: Weekday) => [weekday.day, weekday])
+        );
+
+        return this.weekdays.map((day) => {
+            const weekday = weekdaysByName.get(day);
+
+            return {
+                day,
+                oneTimeEvents: weekday?.oneTimeEvents || [],
+                recurringEvents: weekday?.recurringEvents || []
+            };
+        });
+    }
+
+    static renderWeekday(weekday: Weekday, weekid: string) {
         const day = weekday.day;
         const oneTimeEvents = weekday.oneTimeEvents || [];
         const recurringEvents = weekday.recurringEvents || [];
@@ -110,8 +140,8 @@ export class MomentumEventsHolder extends HTMLElement {
             <momentum-weekday-section>
                 <span slot="day">${day}</span>
 
-                ${oneTimeEvents.map((event) => this.renderEvent(event, "one-time-events"))}
-                ${recurringEvents.map((event) => this.renderEvent(event, "recurring-events"))}
+                ${oneTimeEvents.map((event) => this.renderEvent(event, "one-time-events", weekid))}
+                ${recurringEvents.map((event) => this.renderEvent(event, "recurring-events", weekid))}
             </momentum-weekday-section>
         `;
     }

@@ -1,6 +1,7 @@
 import { html, css, shadow, type Template } from "@unbndl/html";
 import { createViewModel } from "@unbndl/view";
 import { Auth, fromAuth } from "@unbndl/auth";
+import { fromStore } from "@unbndl/store";
 
 import reset from "../styles/reset.css.js";
 import button from "../styles/button.css.ts";
@@ -8,6 +9,8 @@ import button from "../styles/button.css.ts";
 type HeaderViewModel = {
     authenticated: boolean;
     username: string;
+    currentWeekId?: string;
+    events?: { id: string };
 };
 
 export class MomentumHeader extends HTMLElement {
@@ -15,7 +18,9 @@ export class MomentumHeader extends HTMLElement {
     viewModel = createViewModel<HeaderViewModel>({
         authenticated: false,
         username: ""
-    }).with(fromAuth(this), "authenticated", "username");
+    })
+        .with(fromAuth(this), "authenticated", "username")
+        .with(fromStore<HeaderViewModel>(this), "currentWeekId", "events");
 
     view: Template<[HeaderViewModel]> = html`
         <div class="header">
@@ -32,7 +37,7 @@ export class MomentumHeader extends HTMLElement {
                     Dark Mode
                 </label>
 
-                <a href="/app">Home</a>
+                <a href=${($) => this.getHomeHref($.currentWeekId || $.events?.id)}>Home</a>
 
 
                 ${($) => 
@@ -106,6 +111,10 @@ export class MomentumHeader extends HTMLElement {
 
     login() {
         window.location.href = "/login.html";
+    }
+
+    getHomeHref(weekid: string | undefined): string {
+        return weekid ? `/app?week=${encodeURIComponent(weekid)}` : "/app";
     }
 
     static styles = css`
