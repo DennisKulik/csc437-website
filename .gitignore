@@ -1,3 +1,5 @@
 node_modules/
 assets/
 .env
+.DS_Store
+docs/PROJECT_HISTORY.md

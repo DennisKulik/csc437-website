@@ -3,6 +3,10 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
+    "dev:app": "npm run dev --workspace=app",
+    "dev:server": "npm run dev --workspace=server",
+    "build": "npm run build --workspace=app && npm run build --workspace=server",
+    "check": "npm exec --workspace=app -- tsc --noEmit && npm run check --workspace=server",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -15,7 +19,7 @@
     "url": "https://github.com/DennisKulik/csc437-website/issues"
   },
   "homepage": "https://github.com/DennisKulik/csc437-website#readme",
-  "description": "",
+  "description": "A full-stack weekly planning application built with TypeScript, Vite, Express, and MongoDB.",
   "workspaces": [
     "packages/*"
   ]
