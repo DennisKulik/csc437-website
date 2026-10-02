@@ -1,13 +1,19 @@
-import { Events } from "../models";
+import { Event, Events } from "../models";
 declare function index(userid: string): Promise<Events[]>;
 declare function get(id: string, userid: string): Promise<Events | undefined>;
 declare function create(json: Events, userid: string): Promise<Events>;
+declare function addEvent(id: string, day: string, recurring: boolean, event: Event, userid: string): Promise<Events>;
+declare function updateEvent(id: string, eventid: string, replacement: Event, userid: string): Promise<Events | undefined>;
+declare function removeEvent(id: string, eventid: string, userid: string): Promise<Events | undefined>;
 declare function update(id: string, events: Events, userid: string): Promise<Events | undefined>;
 declare function remove(id: string, userid: string): Promise<void>;
 declare const _default: {
     index: typeof index;
     get: typeof get;
     create: typeof create;
+    addEvent: typeof addEvent;
+    updateEvent: typeof updateEvent;
+    removeEvent: typeof removeEvent;
     update: typeof update;
     remove: typeof remove;
 };

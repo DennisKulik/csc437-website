@@ -1,6 +1,6 @@
 import { Auth } from "@unbndl/auth";
 import { Message } from "@unbndl/service";
-import type { Events, Tasks, UserProfile } from "server/models";
+import type { Event as PlanningEvent, Events, Tasks, UserProfile } from "server/models";
 
 import type { Model } from "./model.ts";
 import type { Msg } from "./messages.ts";
@@ -55,6 +55,54 @@ export default function update(
                 events: payload.events,
                 currentWeekId: payload.events.id
             };
+
+        case "events/create":
+            return [
+                { ...model },
+                createEvent(payload.weekid, payload.day, payload.recurring, payload.event, auth)
+                    .then((cmd) => {
+                        const callbacks = message[2];
+                        callbacks?.onSuccess?.();
+                        return cmd;
+                    })
+                    .catch((err: Error) => {
+                        const callbacks = message[2];
+                        callbacks?.onFailure?.(err);
+                        throw err;
+                    })
+            ];
+
+        case "events/update":
+            return [
+                { ...model },
+                updateEvent(payload.weekid, payload.eventid, payload.event, auth)
+                    .then((cmd) => {
+                        const callbacks = message[2];
+                        callbacks?.onSuccess?.();
+                        return cmd;
+                    })
+                    .catch((err: Error) => {
+                        const callbacks = message[2];
+                        callbacks?.onFailure?.(err);
+                        throw err;
+                    })
+            ];
+
+        case "events/delete":
+            return [
+                { ...model },
+                deleteEvent(payload.weekid, payload.eventid, auth)
+                    .then((cmd) => {
+                        const callbacks = message[2];
+                        callbacks?.onSuccess?.();
+                        return cmd;
+                    })
+                    .catch((err: Error) => {
+                        const callbacks = message[2];
+                        callbacks?.onFailure?.(err);
+                        throw err;
+                    })
+            ];
             
         case "events/week-next": {
             const currentWeekId = model.currentWeekId || model.events?.id || getCurrentWeekId();
@@ -157,6 +205,65 @@ function requestEvents(weekid: string, auth: Auth.Model): Promise<Cmd> {
             if (!res.ok) {
                 throw new Error(`Events request failed: ${res.status}`);
             }
+            return res.json();
+        })
+        .then((events: Events) => ["events/load", { events }]);
+}
+
+function createEvent(
+    weekid: string,
+    day: string,
+    recurring: boolean,
+    event: PlanningEvent,
+    auth: Auth.Model
+): Promise<Cmd> {
+    return fetch(`/api/events/${encodeURIComponent(weekid)}/events`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            ...authorization(auth)
+        },
+        body: JSON.stringify({ day, recurring, event })
+    })
+        .then((res) => {
+            if (!res.ok) throw new Error(`Event creation failed: ${res.status}`);
+            return res.json();
+        })
+        .then((events: Events) => ["events/load", { events }]);
+}
+
+function updateEvent(
+    weekid: string,
+    eventid: string,
+    event: PlanningEvent,
+    auth: Auth.Model
+): Promise<Cmd> {
+    return fetch(`/api/events/${encodeURIComponent(weekid)}/events/${encodeURIComponent(eventid)}`, {
+        method: "PUT",
+        headers: {
+            "Content-Type": "application/json",
+            ...authorization(auth)
+        },
+        body: JSON.stringify({ event })
+    })
+        .then((res) => {
+            if (!res.ok) throw new Error(`Event update failed: ${res.status}`);
+            return res.json();
+        })
+        .then((events: Events) => ["events/load", { events }]);
+}
+
+function deleteEvent(
+    weekid: string,
+    eventid: string,
+    auth: Auth.Model
+): Promise<Cmd> {
+    return fetch(`/api/events/${encodeURIComponent(weekid)}/events/${encodeURIComponent(eventid)}`, {
+        method: "DELETE",
+        headers: authorization(auth)
+    })
+        .then((res) => {
+            if (!res.ok) throw new Error(`Event deletion failed: ${res.status}`);
             return res.json();
         })
         .then((events: Events) => ["events/load", { events }]);

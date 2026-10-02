@@ -10,6 +10,13 @@ export interface Weekday {
     recurringEvents: Array<Event>;
 }
 export interface Event {
+    id?: string;
     title: string;
-    href: string;
+    href?: string;
+    category?: string;
+    date?: string;
+    time?: string;
+    location?: string;
+    description?: string;
+    notes?: string;
 }

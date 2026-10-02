@@ -4,13 +4,15 @@ import button from "../styles/button.css.ts";
 
 export class MomentumWeekdaySection extends HTMLElement {
 
+    static observedAttributes = ["day", "week"];
+
     static template = html`
         <template>
             <div class="weekday-section">
                 <div class="event-card-header">
                     <h3><slot name="day">Day</slot></h3>
                     <span class="section-meta">
-                        <button type="button" class="button hover-lift">Add Event</button>
+                        <a class="button hover-lift add-event-link">Add Event</a>
                     </span>
                 </div>
 
@@ -37,6 +39,22 @@ export class MomentumWeekdaySection extends HTMLElement {
         shadow(this)
             .template(MomentumWeekdaySection.template)
             .styles(reset.styles, button.styles, MomentumWeekdaySection.styles);
+
+        this.updateAddEventHref();
+    }
+
+    attributeChangedCallback() {
+        this.updateAddEventHref();
+    }
+
+    updateAddEventHref() {
+        const link = this.shadowRoot?.querySelector(".add-event-link") as HTMLAnchorElement | null;
+        const day = this.getAttribute("day");
+        const week = this.getAttribute("week");
+
+        if (!link || !day || !week) return;
+
+        link.href = `/app/event?new=true&week=${encodeURIComponent(week)}&day=${encodeURIComponent(day)}`;
     }
 
     static styles = css`
@@ -66,6 +84,11 @@ export class MomentumWeekdaySection extends HTMLElement {
 
         .section-meta {
             color: var(--text-primary);
+        }
+
+        .add-event-link {
+            display: inline-block;
+            text-decoration: none;
         }
 
         .event-list-container {

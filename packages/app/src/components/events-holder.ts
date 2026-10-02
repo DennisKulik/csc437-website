@@ -7,6 +7,7 @@ import reset from "../styles/reset.css.js";
 import button from "../styles/button.css.ts";
 
 type EventCard = {
+    id?: string;
     title: string;
     href: string;
 };
@@ -104,7 +105,8 @@ export class MomentumEventsHolder extends HTMLElement {
 
     static renderEvent(event: EventCard, slotName: string, weekid: string) {
         const { title } = event;
-        const eventHref = `/app/event?event=${encodeURIComponent(title)}&week=${encodeURIComponent(weekid)}`;
+        const eventKey = event.id || title;
+        const eventHref = `/app/event?event=${encodeURIComponent(eventKey)}&week=${encodeURIComponent(weekid)}`;
 
         return html`
             <li slot=${slotName}>
@@ -137,7 +139,7 @@ export class MomentumEventsHolder extends HTMLElement {
         const recurringEvents = weekday.recurringEvents || [];
 
         return html`
-            <momentum-weekday-section>
+            <momentum-weekday-section day=${day} week=${weekid}>
                 <span slot="day">${day}</span>
 
                 ${oneTimeEvents.map((event) => this.renderEvent(event, "one-time-events", weekid))}
@@ -148,7 +150,7 @@ export class MomentumEventsHolder extends HTMLElement {
     
     static styles = css`
         :host {
-            grid-column: 4 / end;
+            grid-column: start / end;
         }
         
         @media (max-width: 1100px) {

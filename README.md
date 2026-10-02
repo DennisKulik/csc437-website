@@ -6,7 +6,7 @@ The application uses a TypeScript front end built with Vite and Web Components, 
 
 ## Current status
 
-The application currently supports account registration and login, user profiles, and authenticated weekly event data. The event-creation experience and task workflow are active areas of development. A public demo and visual project walkthrough will be added after those flows are complete.
+The application currently supports account registration and login, editable user profiles, and authenticated weekly event data. Users can create, view, edit, and delete events, and classify them as one-time or recurring within the selected week. The earlier task workflow is being held outside the active interface until it has the same level of persistence and interaction. A public demo and visual project walkthrough will be added after the remaining portfolio-readiness work is complete.
 
 ## Technology
 
