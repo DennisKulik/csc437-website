@@ -29,8 +29,17 @@ export class MomentumEventsHolder extends HTMLElement {
         "Saturday"
     ];
 
-    viewModel = createViewModel<Model>({})
-        .with(fromStore<Model>(this), "events", "currentWeekId");
+    viewModel = createViewModel<Model>({
+        eventsStatus: "idle",
+        userStatus: "idle"
+    })
+        .with(
+            fromStore<Model>(this),
+            "events",
+            "eventsStatus",
+            "eventsError",
+            "currentWeekId"
+        );
 
     view: Template<[Model]> = html`
         <div class="events-holder">
@@ -49,14 +58,7 @@ export class MomentumEventsHolder extends HTMLElement {
             </div>
 
             <div class="weekday-list">
-                ${($) => {
-                    const weekid = $.currentWeekId || $.events?.id || MomentumEventsHolder.getCurrentWeekId();
-                    const weekdays = MomentumEventsHolder.getWeekdays($.events?.weekdays as Weekday[] | undefined);
-
-                    return weekdays.map((weekday) =>
-                        MomentumEventsHolder.renderWeekday(weekday, weekid)
-                    );
-                }}
+                ${($) => this.renderWeekState($)}
             </div>
         </div>
     `;
@@ -71,6 +73,9 @@ export class MomentumEventsHolder extends HTMLElement {
             })
             .delegate(".next-week-button", {
                 click: () => Store.dispatch(this, ["events/week-next", {}])
+            })
+            .delegate(".retry-events-button", {
+                click: () => this.requestCurrentWeek()
             });
     }
 
@@ -78,11 +83,52 @@ export class MomentumEventsHolder extends HTMLElement {
         const $ = this.viewModel.toObject();
         const requestedWeekId = new URLSearchParams(window.location.search).get("week");
         const weekid = requestedWeekId || $.currentWeekId || $.events?.id || MomentumEventsHolder.getCurrentWeekId();
-        console.log("events-holder connected", this.closest("store-provider"));
-
         if ($.events?.id !== weekid) {
             Store.dispatch(this, ["events/request", { weekid }]);
         }
+    }
+
+    requestCurrentWeek() {
+        const $ = this.viewModel.toObject();
+        const weekid = $.currentWeekId || $.events?.id || MomentumEventsHolder.getCurrentWeekId();
+        Store.dispatch(this, ["events/request", { weekid }]);
+    }
+
+    renderWeekState(model: Model) {
+        if (model.eventsStatus === "idle" || model.eventsStatus === "loading") {
+            return html`
+                <div class="week-state" role="status" aria-live="polite">
+                    Loading this week...
+                </div>
+            `;
+        }
+
+        if (model.eventsStatus === "error") {
+            return html`
+                <div class="week-state week-error" role="alert">
+                    <p>${model.eventsError || "This week could not be loaded."}</p>
+                    <button type="button" class="button hover-lift retry-events-button">
+                        Try Again
+                    </button>
+                </div>
+            `;
+        }
+
+        const weekid = model.currentWeekId || model.events?.id || MomentumEventsHolder.getCurrentWeekId();
+        const weekdays = MomentumEventsHolder.getWeekdays(model.events?.weekdays as Weekday[] | undefined);
+        const eventCount = weekdays.reduce(
+            (total, weekday) => total + weekday.oneTimeEvents.length + weekday.recurringEvents.length,
+            0
+        );
+
+        return html`
+            ${eventCount === 0 ? html`
+                <p class="empty-week" role="status">
+                    Nothing is scheduled for this week yet. Add an event to any day below.
+                </p>
+            ` : ""}
+            ${weekdays.map((weekday) => MomentumEventsHolder.renderWeekday(weekday, weekid))}
+        `;
     }
 
     static getCurrentWeekId(): string {
@@ -194,6 +240,24 @@ export class MomentumEventsHolder extends HTMLElement {
             flex-direction: column;
             
             gap: var(--padding-small);
+        }
+
+        .week-state,
+        .empty-week {
+            padding: var(--padding-standard);
+            border-radius: var(--padding-mini);
+            color: var(--text-primary);
+            background-color: var(--color-secondary);
+            text-align: center;
+        }
+
+        .week-state p,
+        .empty-week {
+            margin: 0;
+        }
+
+        .week-error .button {
+            margin-top: var(--padding-small);
         }
     `;
 }

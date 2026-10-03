@@ -13,7 +13,10 @@ type TaskCard = {
 
 export class MomentumTasksHolder extends HTMLElement {
 
-    viewModel = createViewModel<Model>({})
+    viewModel = createViewModel<Model>({
+        eventsStatus: "idle",
+        userStatus: "idle"
+    })
         .with(fromStore<Model>(this), "tasks");
 
     view: Template<[Model]> = html`

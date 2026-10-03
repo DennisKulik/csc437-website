@@ -3,6 +3,7 @@ import { createViewModel } from "@unbndl/view";
 import { Store, fromStore } from "@unbndl/store";
 
 import type { UserProfile } from "server/models";
+import type { LoadStatus } from "../model.ts";
 
 import reset from "../styles/reset.css.ts";
 import page from "../styles/page.css.ts";
@@ -15,22 +16,29 @@ type UserMode = "view" | "edit";
 interface UserViewModel {
     mode: UserMode;
     user?: UserProfile;
+    userStatus: LoadStatus;
+    userError?: string;
+    saveError: string;
 }
 
 
 export class UserViewElement extends HTMLElement {
     viewModel = createViewModel<UserViewModel>({
-        mode: "view"
+        mode: "view",
+        userStatus: "idle",
+        saveError: ""
     })
-        .with(fromStore<UserViewModel>(this), "user");
+        .with(fromStore<UserViewModel>(this), "user", "userStatus", "userError");
             
     view: Template<[UserViewModel]> = html`
         <div class="page">
             <div class="profile-layout">
                 ${($) =>
-                    $.user
+                    $.userStatus === "error"
+                        ? this.renderErrorView($.userError)
+                        : $.user
                         ? $.mode === "edit"
-                            ? this.renderEditView($.user)
+                            ? this.renderEditView($.user, $.saveError)
                             : this.renderMainView($.user)
                         : this.renderLoadingView()
                 }
@@ -49,6 +57,9 @@ export class UserViewElement extends HTMLElement {
             .delegate(".cancel-edit-button", {
                 click: () => this.setMode("view")
             })
+            .delegate(".retry-profile-button", {
+                click: () => this.requestProfile()
+            })
             .listen({
                 submit: (ev: Event) => this.submitForm(ev)
             });
@@ -57,20 +68,34 @@ export class UserViewElement extends HTMLElement {
     connectedCallback() {
         const $ = this.viewModel.toObject();
 
-        if (!$.user) {
-            Store.dispatch(this, ["user/request", {}]);
-        }
+        if (!$.user && $.userStatus === "idle") this.requestProfile();
+    }
+
+    requestProfile() {
+        Store.dispatch(this, ["user/request", {}]);
     }
 
     setMode(mode: UserMode) {
-        this.viewModel.update({ mode });
+        this.viewModel.update({ mode, saveError: "" });
     }
 
     renderLoadingView() {
         return html`
-            <div class="user-info border-small">
+            <div class="profile-state card border-small" role="status" aria-live="polite">
                 <h2>User Info</h2>
                 <p>Loading profile...</p>
+            </div>
+        `;
+    }
+
+    renderErrorView(error?: string) {
+        return html`
+            <div class="profile-state card border-small" role="alert">
+                <h2>Profile unavailable</h2>
+                <p>${error || "Your profile could not be loaded."}</p>
+                <button type="button" class="button hover-lift retry-profile-button">
+                    Try Again
+                </button>
             </div>
         `;
     }
@@ -111,7 +136,7 @@ export class UserViewElement extends HTMLElement {
         `;
     }
 
-    renderEditView(profile: UserProfile) {
+    renderEditView(profile: UserProfile, saveError: string) {
         return html`
             <section class="profile-card card border-small">
                 <h2>Edit Profile</h2>
@@ -153,6 +178,8 @@ export class UserViewElement extends HTMLElement {
                         />
                     </label>
 
+                    <p class="save-error" role="alert" aria-live="polite">${saveError}</p>
+
                     <div class="form-controls">
                         <button type="submit" class="button hover-lift">
                             Save
@@ -183,6 +210,8 @@ export class UserViewElement extends HTMLElement {
 
         if (!$.user) return;
 
+        this.viewModel.update({ saveError: "" });
+
         const updatedUser: UserProfile = {
             ...$.user,
             ...formData
@@ -196,7 +225,9 @@ export class UserViewElement extends HTMLElement {
             },
             {
                 onSuccess: () => this.setMode("view"),
-                onFailure: (error: Error) => console.log("ERROR:", error)
+                onFailure: () => this.viewModel.update({
+                    saveError: "Your changes could not be saved. Please try again."
+                })
             }
         ]);
     }
@@ -227,6 +258,14 @@ export class UserViewElement extends HTMLElement {
         .profile-card {
             padding: var(--padding-standard);
             background-color: var(--color-secondary);
+        }
+
+        .profile-state {
+            grid-column: 1 / -1;
+            padding: var(--padding-standard);
+            color: var(--text-primary);
+            background-color: var(--color-secondary);
+            text-align: center;
         }
 
         .profile-picture-holder {
@@ -312,6 +351,12 @@ export class UserViewElement extends HTMLElement {
             gap: var(--padding-small);
             align-items: center;
             flex-wrap: wrap;
+        }
+
+        .save-error {
+            min-height: 1.5em;
+            margin: 0 0 var(--padding-small);
+            color: var(--solarized-red);
         }
 
         @media (max-width: 1100px) {

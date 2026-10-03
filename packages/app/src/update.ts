@@ -14,7 +14,9 @@ type SaveCallbacks = {
 export type Cmd =
     | ["tasks/load", { tasks: Tasks }]
     | ["events/load", { events: Events }]
-    | ["user/load", { user: UserProfile }];
+    | ["events/fail", { error: string }]
+    | ["user/load", { user: UserProfile }]
+    | ["user/fail", { error: string }];
 
 export default function update(
     model: Readonly<Model>,
@@ -45,16 +47,31 @@ export default function update(
                 {
                     ...model,
                     events: undefined,
+                    eventsStatus: "loading",
+                    eventsError: undefined,
                     currentWeekId: payload.weekid
                 },
                 requestEvents(payload.weekid, auth)
+                    .catch((): Cmd => ["events/fail", {
+                        error: "This week could not be loaded. Check the connection and try again."
+                    }])
             ];
         
         case "events/load":
             return {
                 ...model,
                 events: payload.events,
+                eventsStatus: "ready",
+                eventsError: undefined,
                 currentWeekId: payload.events.id
+            };
+
+        case "events/fail":
+            return {
+                ...model,
+                events: undefined,
+                eventsStatus: "error",
+                eventsError: payload.error
             };
 
         case "events/create":
@@ -113,9 +130,14 @@ export default function update(
                 {
                     ...model,
                     events: undefined,
+                    eventsStatus: "loading",
+                    eventsError: undefined,
                     currentWeekId: nextWeekId
                 },
                 requestEvents(nextWeekId, auth)
+                    .catch((): Cmd => ["events/fail", {
+                        error: "The next week could not be loaded. Please try again."
+                    }])
             ];
         }
 
@@ -127,9 +149,14 @@ export default function update(
                 {
                     ...model,
                     events: undefined,
+                    eventsStatus: "loading",
+                    eventsError: undefined,
                     currentWeekId: previousWeekId
                 },
                 requestEvents(previousWeekId, auth)
+                    .catch((): Cmd => ["events/fail", {
+                        error: "The previous week could not be loaded. Please try again."
+                    }])
             ];
         }
 
@@ -146,8 +173,17 @@ export default function update(
             }
 
             return [
-                { ...model },
+                {
+                    ...model,
+                    userStatus: "loading",
+                    userError: undefined
+                },
                 requestUser(userid, auth)
+                    .catch((err: Error): Cmd => ["user/fail", {
+                        error: err.message.includes("404")
+                            ? "Your profile could not be found."
+                            : "Your profile could not be loaded. Check the connection and try again."
+                    }])
             ];
         }
 
@@ -171,7 +207,16 @@ export default function update(
         case "user/load":
             return {
                 ...model,
-                user: payload.user
+                user: payload.user,
+                userStatus: "ready",
+                userError: undefined
+            };
+
+        case "user/fail":
+            return {
+                ...model,
+                userStatus: "error",
+                userError: payload.error
             };
         
         // case "task/select":

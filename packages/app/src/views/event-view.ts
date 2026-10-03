@@ -26,14 +26,22 @@ export class EventViewElement extends HTMLElement {
         "Saturday"
     ];
 
-    viewModel = createViewModel<Model>({})
-        .with(fromStore<Model>(this), "events", "currentWeekId");
+    viewModel = createViewModel<Model>({
+        eventsStatus: "idle",
+        userStatus: "idle"
+    })
+        .with(
+            fromStore<Model>(this),
+            "events",
+            "eventsStatus",
+            "eventsError",
+            "currentWeekId"
+        );
 
     view: Template<[Model]> = html`
         <main class="page">
             <div class="event-layout">
-                ${($) => this.renderEventList($)}
-                ${($) => this.isCreating() || this.isEditing() ? this.renderEventForm($) : this.renderEventDetail($)}
+                ${($) => this.renderView($)}
             </div>
         </main>
     `;
@@ -48,6 +56,9 @@ export class EventViewElement extends HTMLElement {
             })
             .delegate(".delete-event-button", {
                 click: () => this.deleteSelectedEvent()
+            })
+            .delegate(".retry-events-button", {
+                click: () => this.requestWeek()
             });
     }
 
@@ -60,6 +71,41 @@ export class EventViewElement extends HTMLElement {
         if ($.events?.id !== weekid) {
             Store.dispatch(this, ["events/request", { weekid }]);
         }
+    }
+
+    requestWeek() {
+        const $ = this.viewModel.toObject();
+        const weekid = this.getRequestedWeekId() || $.currentWeekId || EventViewElement.getCurrentWeekId();
+        Store.dispatch(this, ["events/request", { weekid }]);
+    }
+
+    renderView(model: Model) {
+        if (!this.isCreating() && (model.eventsStatus === "idle" || model.eventsStatus === "loading")) {
+            return html`
+                <article class="event-detail load-state card border-small" role="status" aria-live="polite">
+                    <h1>Loading events...</h1>
+                </article>
+            `;
+        }
+
+        if (!this.isCreating() && model.eventsStatus === "error") {
+            return html`
+                <article class="event-detail load-state card border-small" role="alert">
+                    <h1>Events unavailable</h1>
+                    <p>${model.eventsError || "This week could not be loaded."}</p>
+                    <button type="button" class="button hover-lift retry-events-button">
+                        Try Again
+                    </button>
+                </article>
+            `;
+        }
+
+        return html`
+            ${this.renderEventList(model)}
+            ${this.isCreating() || this.isEditing()
+                ? this.renderEventForm(model)
+                : this.renderEventDetail(model)}
+        `;
     }
 
     renderEventList(model: Model) {
@@ -438,6 +484,15 @@ export class EventViewElement extends HTMLElement {
             padding: var(--padding-standard);
             background-color: var(--color-secondary);
             color: var(--text-primary);
+        }
+
+        .load-state {
+            grid-column: 1 / -1;
+            text-align: center;
+        }
+
+        .load-state p {
+            margin: var(--padding-small) 0;
         }
 
         .list-header,
