@@ -4,6 +4,7 @@ import type { Event as PlanningEvent, Events, Tasks, UserProfile } from "server/
 
 import type { Model } from "./model.ts";
 import type { Msg } from "./messages.ts";
+import { apiFetch } from "./session.ts";
 
 type SaveCallbacks = {
     onSuccess?: () => void;
@@ -183,7 +184,7 @@ export default function update(
 }
 
 function requestTasks(auth: Auth.Model): Promise<Cmd> {
-    return fetch("/api/tasks", {
+    return apiFetch("/api/tasks", {
         headers: authorization(auth)
     })
         .then((res) => {
@@ -194,7 +195,7 @@ function requestTasks(auth: Auth.Model): Promise<Cmd> {
 }
 
 function requestEvents(weekid: string, auth: Auth.Model): Promise<Cmd> {
-    return fetch(`/api/events/${weekid}`, {
+    return apiFetch(`/api/events/${weekid}`, {
         headers: authorization(auth)
     })
         .then((res) => {
@@ -217,7 +218,7 @@ function createEvent(
     event: PlanningEvent,
     auth: Auth.Model
 ): Promise<Cmd> {
-    return fetch(`/api/events/${encodeURIComponent(weekid)}/events`, {
+    return apiFetch(`/api/events/${encodeURIComponent(weekid)}/events`, {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
@@ -238,7 +239,7 @@ function updateEvent(
     event: PlanningEvent,
     auth: Auth.Model
 ): Promise<Cmd> {
-    return fetch(`/api/events/${encodeURIComponent(weekid)}/events/${encodeURIComponent(eventid)}`, {
+    return apiFetch(`/api/events/${encodeURIComponent(weekid)}/events/${encodeURIComponent(eventid)}`, {
         method: "PUT",
         headers: {
             "Content-Type": "application/json",
@@ -258,7 +259,7 @@ function deleteEvent(
     eventid: string,
     auth: Auth.Model
 ): Promise<Cmd> {
-    return fetch(`/api/events/${encodeURIComponent(weekid)}/events/${encodeURIComponent(eventid)}`, {
+    return apiFetch(`/api/events/${encodeURIComponent(weekid)}/events/${encodeURIComponent(eventid)}`, {
         method: "DELETE",
         headers: authorization(auth)
     })
@@ -270,7 +271,7 @@ function deleteEvent(
 }
 
 function requestUser(userid: string, auth: Auth.Model): Promise<Cmd> {
-    return fetch(`/api/users/${userid}`, {
+    return apiFetch(`/api/users/${userid}`, {
         headers: authorization(auth)
     })
         .then((res) => {
@@ -326,7 +327,7 @@ function saveUser(
     user: UserProfile,
     auth: Auth.Model
 ): Promise<Cmd> {
-    return fetch(`/api/users/${userid}`, {
+    return apiFetch(`/api/users/${userid}`, {
         method: "PUT",
         headers: {
             "Content-Type": "application/json",

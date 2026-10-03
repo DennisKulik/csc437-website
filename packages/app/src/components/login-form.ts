@@ -1,11 +1,14 @@
 import { css, html, shadow, type Template } from "@unbndl/html";
 import { createViewModel, fromInputs } from "@unbndl/view";
 import reset from "../styles/reset.css.ts";
+import { getPostLoginRedirect } from "../session.ts";
 
 
 type LoginFormViewModel = {
     username: string;
     password: string;
+    errorMessage: string;
+    submitting: boolean;
 };
 
 type LoginFormInputs = {
@@ -16,14 +19,19 @@ type LoginFormInputs = {
 export class LoginFormElement extends HTMLElement {
     viewModel = createViewModel<LoginFormViewModel>({
         username: "",
-        password: ""
+        password: "",
+        errorMessage: "",
+        submitting: false
     }).with(fromInputs<LoginFormInputs>(this), "username", "password");
 
     view: Template<[LoginFormViewModel]> = html`
         <form>
             <slot></slot>
+            <p class="form-error" role="alert" aria-live="polite">
+                ${($) => $.errorMessage}
+            </p>
             <button type="submit">
-                <slot name="submit-label">Login</slot>
+                ${($) => $.submitting ? "Signing in..." : html`<slot name="submit-label">Login</slot>`}
             </button>
         </form>
     `;
@@ -41,6 +49,10 @@ export class LoginFormElement extends HTMLElement {
 
     submitLogin(event: Event, endpoint: string) {
         event.preventDefault();
+        const current = this.viewModel.toObject();
+        if (current.submitting) return;
+
+        this.viewModel.update({ errorMessage: "", submitting: true });
         const data = this.viewModel.toObject();
         const method = "POST";
         const headers: HeadersInit = {
@@ -58,9 +70,15 @@ export class LoginFormElement extends HTMLElement {
                 const customEvent = new CustomEvent("auth:message", {
                     bubbles: true,
                     composed: true,
-                    detail: ["auth/signin", { token, redirect: "/app" }]
+                    detail: ["auth/signin", { token, redirect: getPostLoginRedirect() }]
                 });
                 this.dispatchEvent(customEvent);
+            })
+            .catch(() => {
+                this.viewModel.update({
+                    errorMessage: "The username or password was not accepted.",
+                    submitting: false
+                });
             });
     }
 
@@ -74,6 +92,13 @@ export class LoginFormElement extends HTMLElement {
         button {
             width: fit-content;
             margin: 0 auto;
+        }
+
+        .form-error {
+            min-height: 1.5em;
+            margin: var(--padding-mini) 0;
+            color: var(--text-primary);
+            text-align: center;
         }
 
         login-form {

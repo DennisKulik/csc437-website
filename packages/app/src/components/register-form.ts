@@ -9,6 +9,8 @@ type RegisterFormViewModel = {
     bio: string;
     profilePicture: string;
     password: string;
+    errorMessage: string;
+    submitting: boolean;
 };
 
 type RegisterFormInputs = {
@@ -25,7 +27,9 @@ export class RegisterFormElement extends HTMLElement {
         displayName: "",
         bio: "",
         profilePicture: "",
-        password: ""
+        password: "",
+        errorMessage: "",
+        submitting: false
     }).with(
         fromInputs<RegisterFormInputs>(this),
         "username",
@@ -39,8 +43,12 @@ export class RegisterFormElement extends HTMLElement {
         <form>
             <slot></slot>
 
+            <p class="form-error" role="alert" aria-live="polite">
+                ${($) => $.errorMessage}
+            </p>
+
             <button type="submit">
-                <slot name="submit-label">Register</slot>
+                ${($) => $.submitting ? "Creating account..." : html`<slot name="submit-label">Register</slot>`}
             </button>
         </form>
     `;
@@ -59,6 +67,10 @@ export class RegisterFormElement extends HTMLElement {
 
     submitRegistration(event: Event, endpoint: string) {
         event.preventDefault();
+        const current = this.viewModel.toObject();
+        if (current.submitting) return;
+
+        this.viewModel.update({ errorMessage: "", submitting: true });
 
         const data = this.viewModel.toObject();
 
@@ -118,8 +130,11 @@ export class RegisterFormElement extends HTMLElement {
 
                 this.dispatchEvent(customEvent);
             })
-            .catch((err) => {
-                console.log("Registration error:", err);
+            .catch(() => {
+                this.viewModel.update({
+                    errorMessage: "The account could not be created. The username may already be in use.",
+                    submitting: false
+                });
             });
     }
 
@@ -135,6 +150,12 @@ export class RegisterFormElement extends HTMLElement {
 
         button {
             align-self: start;
+        }
+
+        .form-error {
+            min-height: 1.5em;
+            margin: var(--padding-mini) 0;
+            color: var(--text-primary);
         }
     `;
 }

@@ -6,6 +6,7 @@ import { BrowserHistory, Switch } from "@unbndl/switch";
 import { Msg } from "./messages.ts";
 import { Model, init } from "./model.ts";
 import update, { Cmd } from "./update.ts";
+import { getLoginPageHref, prepareStoredSession } from "./session.ts";
 
 import { MomentumHeader } from "./components/header-element.ts";
 import { MomentumTaskCard } from "./components/task-card.ts";
@@ -21,14 +22,17 @@ import { EventViewElement } from "./views/event-view.ts";
 const routes: Switch.Route[] = [
         {
             path: "/app/user",
+            auth: "protected",
             view: html`<user-view></user-view>`
         },
         {
             path: "/app/event",
+            auth: "protected",
             view: html`<event-view></event-view>`
         },
         {
             path: "/app",
+            auth: "protected",
             view: html`<home-view></home-view>`
         },
         {
@@ -36,6 +40,9 @@ const routes: Switch.Route[] = [
             redirect: "/app"
         }
     ]
+
+prepareStoredSession();
+document.querySelector("auth-provider")?.setAttribute("redirect", getLoginPageHref());
 
 define ({
     "auth-provider": Auth.Provider,
