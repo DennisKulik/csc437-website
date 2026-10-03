@@ -47,7 +47,6 @@ export class LoginFormElement extends HTMLElement {
             "Content-Type": "application/json"
         };
         const body = JSON.stringify(data);
-        console.log("Posting login form:", endpoint, body, event);
         fetch(endpoint, { method, headers, body })
             .then((res) => {
                 if (res.status !== 200)

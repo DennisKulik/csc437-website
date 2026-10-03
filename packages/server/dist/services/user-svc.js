@@ -7,33 +7,19 @@ const userProfileSchema = new Schema({
     profilePicture: { type: String, required: false }
 }, { collection: "users" });
 const UserProfileModel = model("UserProfile", userProfileSchema);
-function index() {
-    return UserProfileModel.find();
-}
 function get(userid) {
-    return UserProfileModel.find({ userid })
-        .then((list) => list[0])
-        .catch(() => {
-        throw `${userid} Not Found`;
-    });
+    return UserProfileModel.findOne({ userid })
+        .then((profile) => profile ?? undefined);
 }
 function create(json) {
     const profile = new UserProfileModel(json);
     return profile.save();
 }
 function update(userid, profile) {
-    return UserProfileModel.findOneAndUpdate({ userid }, profile, { new: true }).then((updated) => {
-        if (!updated)
-            throw `${userid} not updated`;
-        else
-            return updated;
-    });
+    return UserProfileModel.findOneAndUpdate({ userid }, profile, { new: true }).then((updated) => updated ?? undefined);
 }
 function remove(userid) {
     return UserProfileModel.findOneAndDelete({ userid })
-        .then((deleted) => {
-        if (!deleted)
-            throw `${userid} not deleted`;
-    });
+        .then((deleted) => Boolean(deleted));
 }
-export default { index, get, create, update, remove };
+export default { get, create, update, remove };

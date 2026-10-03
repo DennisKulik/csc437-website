@@ -17,16 +17,9 @@ const UserProfileModel = model<UserProfile>(
     userProfileSchema
 );
 
-function index(): Promise<UserProfile[]> {
-    return UserProfileModel.find();
-}
-
 function get(userid: string): Promise<UserProfile | undefined> {
-    return UserProfileModel.find({ userid })
-        .then((list) => list[0])
-        .catch(() => {
-            throw `${userid} Not Found`;
-        });
+    return UserProfileModel.findOne({ userid })
+        .then((profile) => profile ?? undefined);
 }
 
 function create(json: UserProfile): Promise<UserProfile> {
@@ -39,17 +32,12 @@ function update(userid: string, profile: UserProfile): Promise<UserProfile | und
         { userid },
         profile,
         { new: true }
-    ).then((updated) => {
-        if (!updated) throw `${userid} not updated`;
-        else return updated as UserProfile;
-    });
+    ).then((updated) => updated ?? undefined);
 }
 
-function remove(userid: string): Promise<void> {
+function remove(userid: string): Promise<boolean> {
     return UserProfileModel.findOneAndDelete({ userid })
-        .then((deleted) => {
-            if (!deleted) throw `${userid} not deleted`;
-        });
+        .then((deleted) => Boolean(deleted));
 }
 
-export default { index, get, create, update, remove };
+export default { get, create, update, remove };
