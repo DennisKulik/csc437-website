@@ -2,7 +2,8 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8" />
-    <title>Register</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Create account | Momentum</title>
     
     <!-- Styles -->
     <link rel="stylesheet" href="/styles/reset.css"/>
@@ -25,7 +26,7 @@
 <body>
     <auth-provider>
         <momentum-header></momentum-header>
-        <main class="page">
+        <div class="page">
             <h2>Create Account</h2>
 
             <main class="card border-mini">
@@ -65,15 +66,15 @@
                                 <input type="password" name="password" autocomplete="new-password" required />
                             </label>
                         </div>
-                        <span slot="submit-label">Create Account</span>
                     </div>
+                    <span slot="submit-label">Create Account</span>
                 </register-form>
             </main>
             <p>
                 Already have an account?
                 <a href="/login.html">Log in</a>
             </p>
-        </main>
+        </div>
     </auth-provider>
 </body>
 </html>

@@ -2,6 +2,7 @@ import { css, html, shadow, type Template } from "@unbndl/html";
 import { createViewModel, fromInputs } from "@unbndl/view";
 
 import reset from "../styles/reset.css.ts";
+import button from "../styles/button.css.ts";
 
 type RegisterFormViewModel = {
     username: string;
@@ -47,7 +48,7 @@ export class RegisterFormElement extends HTMLElement {
                 ${($) => $.errorMessage}
             </p>
 
-            <button type="submit">
+            <button type="submit" class="button hover-lift">
                 ${($) => $.submitting ? "Creating account..." : html`<slot name="submit-label">Register</slot>`}
             </button>
         </form>
@@ -57,7 +58,7 @@ export class RegisterFormElement extends HTMLElement {
         super();
 
         shadow(this)
-            .styles(reset.styles, RegisterFormElement.styles)
+            .styles(reset.styles, button.styles, RegisterFormElement.styles)
             .replace(this.viewModel.render(this.view))
             .listen({
                 submit: (ev: Event) =>
@@ -146,6 +147,7 @@ export class RegisterFormElement extends HTMLElement {
         form {
             display: flex;
             flex-direction: column;
+            gap: var(--padding-small);
         }
 
         button {
@@ -154,7 +156,7 @@ export class RegisterFormElement extends HTMLElement {
 
         .form-error {
             min-height: 1.5em;
-            margin: var(--padding-mini) 0;
+            margin: 0;
             color: var(--text-primary);
         }
     `;

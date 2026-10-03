@@ -1,6 +1,7 @@
 import { css, html, shadow, type Template } from "@unbndl/html";
 import { createViewModel, fromInputs } from "@unbndl/view";
 import reset from "../styles/reset.css.ts";
+import button from "../styles/button.css.ts";
 import { getPostLoginRedirect } from "../session.ts";
 
 
@@ -30,7 +31,7 @@ export class LoginFormElement extends HTMLElement {
             <p class="form-error" role="alert" aria-live="polite">
                 ${($) => $.errorMessage}
             </p>
-            <button type="submit">
+            <button type="submit" class="button hover-lift">
                 ${($) => $.submitting ? "Signing in..." : html`<slot name="submit-label">Login</slot>`}
             </button>
         </form>
@@ -39,7 +40,7 @@ export class LoginFormElement extends HTMLElement {
     constructor() {
         super();
         shadow(this)
-            .styles(reset.styles, LoginFormElement.styles)
+            .styles(reset.styles, button.styles, LoginFormElement.styles)
             .replace(this.viewModel.render(this.view))
             .listen({
                 submit: (ev: Event) => 
@@ -84,47 +85,23 @@ export class LoginFormElement extends HTMLElement {
 
     static styles = css`
         :host {
-            display: contents;
+            display: block;
         }
         form {
-            display: contents;
+            display: flex;
+            flex-direction: column;
+            gap: var(--padding-small);
         }
         button {
-            width: fit-content;
-            margin: 0 auto;
+            align-self: flex-start;
         }
 
         .form-error {
             min-height: 1.5em;
-            margin: var(--padding-mini) 0;
+            margin: 0;
             color: var(--text-primary);
             text-align: center;
         }
 
-        login-form {
-            display: flex;
-            flex-direction: column;
-            
-        }
-
-        login-form label {
-            display: flex;
-            flex-direction: column;
-            gap: var(--padding-mini);
-            margin-bottom: var(--padding-standard);
-
-            color: var(--text-primary);
-            font-size: 20px;
-        }
-
-        login-form input {
-            padding: var(--padding-mini);
-            border: 2px solid var(--color-primary);
-            border-radius: var(--padding-mini);
-
-            font: inherit;
-            color: var(--text-primary);
-            background-color: var(--color-background);
-        }
     `;
 }

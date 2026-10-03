@@ -25,17 +25,49 @@
 .register-layout {
     display: flex;
     flex-direction: column;
-    align-items: start;
+    gap: var(--padding-standard);
+    width: 100%;
 }
 
-.register-form {
+login-form,
+register-form,
+.register-layout > div {
+    display: block;
+    width: 100%;
+}
+
+login-form label,
+register-form label {
     display: flex;
     flex-direction: column;
-    align-items: center;
+    gap: var(--padding-mini);
+    color: var(--text-primary);
+    font-size: 20px;
+    font-weight: 700;
 }
 
+login-form label + label {
+    margin-top: var(--padding-standard);
+}
 
+login-form input,
+register-form input,
+register-form textarea {
+    width: 100%;
+    min-width: 0;
+    padding: var(--padding-mini);
+    border: 2px solid var(--color-primary);
+    border-radius: var(--padding-mini);
+    color: var(--text-primary);
+    background-color: var(--color-background);
+    font: inherit;
+    font-weight: 400;
+}
 
+register-form textarea {
+    min-height: 7rem;
+    resize: vertical;
+}
 
 @media (max-width: 1100px) {
     .page h2,
@@ -56,5 +88,9 @@
 
     .page main.card {
         padding: var(--padding-small);
+    }
+
+    .page h2 {
+        font-size: 34px;
     }
 }

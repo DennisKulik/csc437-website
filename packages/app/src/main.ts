@@ -7,6 +7,7 @@ import { Msg } from "./messages.ts";
 import { Model, init } from "./model.ts";
 import update, { Cmd } from "./update.ts";
 import { getLoginPageHref, prepareStoredSession } from "./session.ts";
+import { initializeTheme } from "./theme.ts";
 
 import { MomentumHeader } from "./components/header-element.ts";
 import { MomentumTaskCard } from "./components/task-card.ts";
@@ -42,6 +43,7 @@ const routes: Switch.Route[] = [
     ]
 
 prepareStoredSession();
+initializeTheme();
 document.querySelector("auth-provider")?.setAttribute("redirect", getLoginPageHref());
 
 define ({
@@ -68,17 +70,4 @@ define ({
     "home-view": HomeViewElement,
     "user-view": UserViewElement,
     "event-view": EventViewElement
-});
-
-const savedDarkMode = localStorage.getItem("dark-mode");
-if (savedDarkMode === "true") {
-    document.body.classList.add("dark-mode");
-}
-
-document.body.addEventListener("darkmode:toggle", (ev: Event) => {
-    const custom = ev as CustomEvent<{ checked: boolean }>;
-    const checked = custom.detail.checked;
-
-    document.body.classList.toggle("dark-mode", checked);
-    localStorage.setItem("dark-mode", String(checked));
 });

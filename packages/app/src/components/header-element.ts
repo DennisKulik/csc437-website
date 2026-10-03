@@ -193,7 +193,56 @@ export class MomentumHeader extends HTMLElement {
         }
 
         .signout-button {
-            margin: 0 var(--padding-mini) var(--padding-mini);
+            margin: 0;
+        }
+
+        @media (max-width: 700px) {
+            .header {
+                flex-direction: column;
+                align-items: stretch;
+                gap: var(--padding-mini);
+                padding: var(--padding-mini) var(--padding-small);
+            }
+
+            .header-left {
+                gap: var(--padding-mini);
+            }
+
+            .header-left h1 {
+                font-size: 38px;
+            }
+
+            .header-left svg.icon-logo {
+                width: 3.5rem;
+                height: 3.5rem;
+            }
+
+            .header-right {
+                width: 100%;
+                flex-wrap: wrap;
+                gap: var(--padding-mini) var(--padding-small);
+            }
+
+            .header-right label,
+            .header-right a {
+                font-size: 19px;
+            }
+
+            .logged-in svg.icon-logo {
+                width: 2.75rem;
+                height: 2.75rem;
+            }
+        }
+
+        @media (max-width: 420px) {
+            .header-left h1 {
+                font-size: 32px;
+            }
+
+            .header-left svg.icon-logo {
+                width: 3rem;
+                height: 3rem;
+            }
         }
     `;
 }
