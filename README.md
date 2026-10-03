@@ -64,6 +64,8 @@ TOKEN_SECRET=your_private_token_secret
 
 `MONGO_CLUSTER` should contain only the cluster hostname, without `mongodb+srv://`, credentials, a database path, or query parameters. The populated `.env` file is ignored by Git and must not be committed.
 
+The server treats all four values as required and exits before opening its HTTP port if configuration or the Atlas connection is unavailable.
+
 Start the API from one terminal:
 
 ```bash

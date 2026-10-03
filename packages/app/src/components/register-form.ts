@@ -75,9 +75,12 @@ export class RegisterFormElement extends HTMLElement {
 
         const data = this.viewModel.toObject();
 
-        const credentials = {
+        const registration = {
             username: data.username,
-            password: data.password
+            password: data.password,
+            displayName: data.displayName,
+            bio: data.bio,
+            profilePicture: data.profilePicture
         };
 
         const headers: HeadersInit = {
@@ -87,7 +90,7 @@ export class RegisterFormElement extends HTMLElement {
         fetch(endpoint, {
             method: "POST",
             headers,
-            body: JSON.stringify(credentials)
+            body: JSON.stringify(registration)
         })
             .then((res) => {
                 if (res.status !== 201) {
@@ -98,31 +101,6 @@ export class RegisterFormElement extends HTMLElement {
             })
             .then((json: { token: string }) => {
                 const { token } = json;
-
-                const profile = {
-                    userid: data.username,
-                    username: data.username,
-                    displayName: data.displayName,
-                    bio: data.bio,
-                    profilePicture: data.profilePicture
-                };
-
-                return fetch("/api/users", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                        Authorization: `Bearer ${token}`
-                    },
-                    body: JSON.stringify(profile)
-                }).then((res) => {
-                    if (res.status !== 201) {
-                        throw new Error(`Profile creation failed: Status ${res.status}`);
-                    }
-
-                    return { token };
-                });
-            })
-            .then(({ token }) => {
                 const customEvent = new CustomEvent("auth:message", {
                     bubbles: true,
                     composed: true,

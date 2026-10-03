@@ -1,4 +1,3 @@
-import dotenv from "dotenv";
 import express, {
     NextFunction,
     Request,
@@ -7,6 +6,9 @@ import express, {
 import jwt from "jsonwebtoken";
 
 import credentials from "../services/credential-svc.ts";
+import UsersSvc from "../services/user-svc.ts";
+import { config } from "../config.ts";
+import { isRecord, profileFromRequest } from "../request-validation.ts";
 
 type AuthTokenPayload = {
     username: string;
@@ -22,47 +24,92 @@ declare global {
 
 const router = express.Router();
 
-dotenv.config();
-const TOKEN_SECRET: string = 
-    process.env.TOKEN_SECRET || "NOT_A_SECRET";
-    
-router.post("/register", (req: Request, res: Response) => {
-    const { username, password } = req.body;
+function registrationUsername(value: unknown): string | undefined {
+    if (typeof value !== "string") return undefined;
 
-    if (typeof username !== "string" || typeof password !== "string") {
-        res.status(400).send("Bad Request: Invalid input data.");
-    } else {
-        credentials
-            .create(username, password)
-            .then((creds) => generateAccessToken(creds.username))
-            .then((token) => {
-                res.status(201).send({ token: token });
-            })
-            .catch((err) => {
-                res.status(400).send({ error: err.message });
-            });
+    const username = value.trim();
+    if (
+        username.length < 3 ||
+        username.length > 50 ||
+        !/^[A-Za-z0-9._-]+$/.test(username)
+    ) {
+        return undefined;
+    }
+
+    return username;
+}
+
+function isDuplicateKey(error: unknown): boolean {
+    return isRecord(error) && error.code === 11000;
+}
+
+router.post("/register", async (req: Request, res: Response) => {
+    if (!isRecord(req.body)) {
+        res.status(400).send({ error: "Invalid registration data." });
+        return;
+    }
+
+    const username = registrationUsername(req.body.username);
+    const password = req.body.password;
+    const profile = username ? profileFromRequest(req.body, username) : undefined;
+
+    if (
+        !username ||
+        typeof password !== "string" ||
+        password.length < 8 ||
+        password.length > 128 ||
+        !profile
+    ) {
+        res.status(400).send({ error: "Invalid registration data." });
+        return;
+    }
+
+    let credentialCreated = false;
+
+    try {
+        const token = await generateAccessToken(username);
+        await credentials.create(username, password);
+        credentialCreated = true;
+        await UsersSvc.create(profile);
+        res.status(201).send({ token });
+    } catch (error: unknown) {
+        if (credentialCreated) await credentials.remove(username).catch(() => false);
+
+        if (isDuplicateKey(error)) {
+            res.status(409).send({ error: "That username is already in use." });
+        } else {
+            res.status(500).send({ error: "Unable to create account." });
+        }
     }
 });
 
 router.post("/login", (req: Request, res: Response) => {
-    const { username, password } = req.body;
+    if (!isRecord(req.body)) {
+        res.status(400).send({ error: "Invalid login data." });
+        return;
+    }
 
-    if (!username || !password) {
-        res.status(400).send("Bad Request: Invalid input data.");
+    const username = typeof req.body.username === "string"
+        ? req.body.username.trim()
+        : undefined;
+    const password = req.body.password;
+
+    if (!username || typeof password !== "string" || !password) {
+        res.status(400).send({ error: "Invalid login data." });
     } else {
         credentials
             .verify(username, password)
             .then((goodUser: string) => generateAccessToken(goodUser))
             .then((token) => res.status(200).send({ token: token }))
-            .catch((err) => res.status(401).send("Unauthorized"));
+            .catch(() => res.status(401).send({ error: "Unauthorized" }));
     }
 });
 
-function generateAccessToken(username: string): Promise<String> {
+function generateAccessToken(username: string): Promise<string> {
     return new Promise((resolve, reject) => {
         jwt.sign(
             { username: username },
-            TOKEN_SECRET,
+            config.tokenSecret,
             { expiresIn: "1d" },
             (error, token) => {
                 if (error) reject(error);
@@ -83,7 +130,7 @@ export function authenticateUser(
     if (!token) {
         res.status(401).end();
     } else {
-        jwt.verify(token, TOKEN_SECRET, (error, decoded) => {
+        jwt.verify(token, config.tokenSecret, (error, decoded) => {
             if (error || !decoded || typeof decoded === "string") {
                 res.status(401).end();
                 return;

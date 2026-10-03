@@ -148,6 +148,8 @@ export class UserViewElement extends HTMLElement {
                             type="text"
                             name="displayName"
                             value=${profile.displayName}
+                            maxlength="80"
+                            required
                         />
                     </label>
 
@@ -166,15 +168,17 @@ export class UserViewElement extends HTMLElement {
                         <textarea
                             name="bio"
                             value=${profile.bio || ""}
+                            maxlength="1000"
                         ></textarea>
                     </label>
 
                     <label>
                         Profile Picture URL
                         <input
-                            type="text"
+                            type="url"
                             name="profilePicture"
                             value=${profile.profilePicture || ""}
+                            maxlength="2048"
                         />
                     </label>
 

@@ -35,35 +35,35 @@
                         <div>
                             <label>
                                 Username:
-                                <input type="text" name="username" autocomplete="username" required />
+                                <input type="text" name="username" autocomplete="username" minlength="3" maxlength="50" pattern="[A-Za-z0-9._-]+" required />
                             </label>
                         </div>
 
                         <div>
                             <label>
                                 Display Name:
-                                <input type="text" name="displayName" autocomplete="name" required />
+                                <input type="text" name="displayName" autocomplete="name" maxlength="80" required />
                             </label>
                         </div>
 
                         <div>
                             <label>
                                 Bio:
-                                <textarea name="bio"></textarea>
+                                <textarea name="bio" maxlength="1000"></textarea>
                             </label>
                         </div>
 
                         <div>
                             <label>
                                 Profile Picture URL:
-                                <input type="text" name="profilePicture" />
+                                <input type="url" name="profilePicture" maxlength="2048" />
                             </label>
                         </div>
 
                         <div>
                             <label>
                                 Password:
-                                <input type="password" name="password" autocomplete="new-password" required />
+                                <input type="password" name="password" autocomplete="new-password" minlength="8" maxlength="128" required />
                             </label>
                         </div>
                     </div>

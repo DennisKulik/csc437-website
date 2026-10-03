@@ -3,62 +3,50 @@ import { Event, Events } from "../models";
 
 const eventItemSchema = new Schema(
     {
-        id: String,
-        title: { type: String, required: true, trim: true },
+        id: { type: String, maxlength: 100 },
+        title: { type: String, required: true, trim: true, maxlength: 100 },
         href: String,
-        category: String,
+        category: { type: String, maxlength: 50 },
         date: String,
         time: String,
-        location: String,
-        description: String,
-        notes: String
+        location: { type: String, maxlength: 120 },
+        description: { type: String, maxlength: 1000 },
+        notes: { type: String, maxlength: 1000 }
     },
     { _id: false }
 );
 
 const weekdaySchema = new Schema(
     {
-        day: String,
-        oneTimeEvents: [eventItemSchema],
-        recurringEvents: [eventItemSchema]
+        day: { type: String, required: true, enum: [
+            "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"
+        ] },
+        oneTimeEvents: { type: [eventItemSchema], default: [] },
+        recurringEvents: { type: [eventItemSchema], default: [] }
     },
     { _id: false }
 );
 
 const eventsSchema = new Schema(
     {
-        id: String,
-        userid: String,
-        week: Date,
-        weekdays: [weekdaySchema]
+        id: { type: String, required: true },
+        userid: { type: String, required: true },
+        week: { type: Date, required: true },
+        weekdays: { type: [weekdaySchema], default: [] }
     },
     { collection: "events" }
 );
+
+eventsSchema.index({ userid: 1, id: 1 }, { unique: true });
 
 const EventsModel = model<Events>(
     "Events", 
     eventsSchema
 );
 
-function index(userid: string): Promise<Events[]> {
-    return EventsModel.find({ userid });
-}
-
 function get(id: string, userid: string): Promise<Events | undefined> {
-    return EventsModel.find({ id, userid })
-        .then((list) => list[0])
-        .catch(() => {
-            throw `${id} Not Found`;
-        });
-}
-
-function create(json: Events, userid: string): Promise<Events> {
-    const events = new EventsModel({
-        ...json,
-        userid
-    });
-
-    return events.save();
+    return EventsModel.findOne({ id, userid })
+        .then((events) => events ?? undefined);
 }
 
 async function addEvent(
@@ -93,6 +81,12 @@ async function addEvent(
     const eventList = recurring
         ? weekday.recurringEvents
         : weekday.oneTimeEvents;
+
+    const duplicate = events.weekdays.some((candidate) =>
+        [...candidate.oneTimeEvents, ...candidate.recurringEvents]
+            .some((existing) => existing.id === event.id)
+    );
+    if (duplicate) throw new Error("EVENT_ID_EXISTS");
 
     eventList.push(event);
     return events.save();
@@ -144,26 +138,4 @@ async function removeEvent(
     return undefined;
 }
 
-function update(id: string, events: Events, userid: string): Promise<Events | undefined> {
-    return EventsModel.findOneAndUpdate(
-        { id, userid },
-        {
-            ...events,
-            id,
-            userid
-        },
-        { new: true }
-    ).then((updated) => {
-        if (!updated) throw `${id} not updated`;
-        else return updated as Events;
-    });
-}
-
-function remove(id: string, userid: string): Promise<void> {
-    return EventsModel.findOneAndDelete({ id, userid })
-        .then((deleted) => {
-            if (!deleted) throw `${id} not deleted`;
-        });
-}
-
-export default { index, get, create, addEvent, updateEvent, removeEvent, update, remove };
+export default { get, addEvent, updateEvent, removeEvent };

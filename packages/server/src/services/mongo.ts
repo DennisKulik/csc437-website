@@ -1,27 +1,16 @@
 import mongoose from "mongoose";
-import dotenv from "dotenv";
+import { config } from "../config.ts";
 
-mongoose.set("debug", true);
-dotenv.config();
-
-function getMongoURI(dbname: string) {
-  let connection_string = `mongodb://localhost:27017/${dbname}`;
-  const { MONGO_USER, MONGO_PWD, MONGO_CLUSTER } = process.env;
-
-  if (MONGO_USER && MONGO_PWD && MONGO_CLUSTER) {
-    console.log(
-      "Connecting to MongoDB at",
-      `mongodb+srv://${MONGO_USER}:<password>@${MONGO_CLUSTER}/${dbname}`
-    );
-    connection_string = `mongodb+srv://${MONGO_USER}:${MONGO_PWD}@${MONGO_CLUSTER}/${dbname}?retryWrites=true&w=majority`;
-  } else {
-    console.log("Connecting to MongoDB at ", connection_string);
-  }
-  return connection_string;
+function getMongoURI(dbname: string): string {
+    const username = encodeURIComponent(config.mongoUser);
+    const password = encodeURIComponent(config.mongoPassword);
+    return `mongodb+srv://${username}:${password}@${config.mongoCluster}/${dbname}?retryWrites=true&w=majority`;
 }
 
-export function connect(dbname: string) {
-  mongoose
-    .connect(getMongoURI(dbname))
-    .catch((error) => console.log(error));
+export async function connect(dbname: string): Promise<void> {
+    await mongoose.connect(getMongoURI(dbname));
+    await Promise.all(
+        Object.values(mongoose.models).map((registeredModel) => registeredModel.init())
+    );
+    console.log(`Connected to MongoDB database ${dbname}`);
 }

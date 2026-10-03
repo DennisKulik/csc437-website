@@ -3,11 +3,11 @@ import { UserProfile } from "../models";
 
 const userProfileSchema = new Schema(
     {
-        userid: { type: String, required: true },
-        username: { type: String, required: true },
-        displayName: { type: String, required: true },
-        bio: { type: String, required: false },
-        profilePicture: { type: String, required: false }
+        userid: { type: String, required: true, unique: true, trim: true },
+        username: { type: String, required: true, unique: true, trim: true },
+        displayName: { type: String, required: true, trim: true, maxlength: 80 },
+        bio: { type: String, required: false, maxlength: 1000 },
+        profilePicture: { type: String, required: false, maxlength: 2048 }
     },
     { collection: "users" }
 );
@@ -35,9 +35,4 @@ function update(userid: string, profile: UserProfile): Promise<UserProfile | und
     ).then((updated) => updated ?? undefined);
 }
 
-function remove(userid: string): Promise<boolean> {
-    return UserProfileModel.findOneAndDelete({ userid })
-        .then((deleted) => Boolean(deleted));
-}
-
-export default { get, create, update, remove };
+export default { get, create, update };

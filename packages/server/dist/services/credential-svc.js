@@ -4,7 +4,8 @@ const credentialSchema = new Schema({
     username: {
         type: String,
         required: true,
-        trim: true
+        trim: true,
+        unique: true
     },
     hashedPassword: {
         type: String,
@@ -12,37 +13,21 @@ const credentialSchema = new Schema({
     }
 }, { collection: "user_credentials" });
 const credentialModel = model("Credential", credentialSchema);
-function create(username, password) {
-    return credentialModel
-        .find({ username })
-        .then((found) => {
-        if (found.length)
-            throw `Username exists: ${username}`;
-    })
-        .then(() => bcrypt
-        .genSalt(10)
-        .then((salt) => bcrypt.hash(password, salt))
-        .then((hashedPassword) => {
-        const creds = new credentialModel({
-            username,
-            hashedPassword
-        });
-        return creds.save();
-    }));
+async function create(username, password) {
+    const hashedPassword = await bcrypt.hash(password, 10);
+    return new credentialModel({ username, hashedPassword }).save();
 }
-function verify(username, password) {
-    return credentialModel
-        .find({ username })
-        .then((found) => {
-        if (!found || found.length !== 1)
-            throw "Invalid username or password";
-        return found[0];
-    })
-        .then((credsOnFile) => bcrypt.compare(password, credsOnFile.hashedPassword)
-        .then((result) => {
-        if (!result)
-            throw "Invalid username or password";
-        return credsOnFile.username;
-    }));
+async function verify(username, password) {
+    const credsOnFile = await credentialModel.findOne({ username });
+    if (!credsOnFile)
+        throw new Error("Invalid username or password");
+    const verified = await bcrypt.compare(password, credsOnFile.hashedPassword);
+    if (!verified)
+        throw new Error("Invalid username or password");
+    return credsOnFile.username;
 }
-export default { create, verify };
+function remove(username) {
+    return credentialModel.findOneAndDelete({ username })
+        .then((deleted) => Boolean(deleted));
+}
+export default { create, verify, remove };

@@ -1,5 +1,6 @@
 import express from "express";
 import EventsSvc from "../services/events-svc.js";
+import { isRecord } from "../request-validation.js";
 const router = express.Router();
 const weekdays = new Set([
     "Sunday",
@@ -10,8 +11,25 @@ const weekdays = new Set([
     "Friday",
     "Saturday"
 ]);
-function optionalString(value) {
-    return value === undefined || typeof value === "string";
+function optionalString(value, maxLength) {
+    return value === undefined || (typeof value === "string" && value.length <= maxLength);
+}
+function isDateId(value) {
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(value))
+        return false;
+    const parsed = new Date(`${value}T00:00:00Z`);
+    return !Number.isNaN(parsed.getTime()) && parsed.toISOString().slice(0, 10) === value;
+}
+function isOptionalDate(value) {
+    return value === undefined || value === "" || (typeof value === "string" && isDateId(value));
+}
+function isOptionalTime(value) {
+    return value === undefined || value === "" || (typeof value === "string" && /^([01]\d|2[0-3]):[0-5]\d$/.test(value));
+}
+function cleanOptional(value) {
+    if (typeof value !== "string")
+        return undefined;
+    return value.trim() || undefined;
 }
 function getUserid(req, res) {
     const userid = req.user?.username;
@@ -21,21 +39,13 @@ function getUserid(req, res) {
     }
     return userid;
 }
-router.get("/", (req, res) => {
-    const userid = getUserid(req, res);
-    if (!userid)
-        return;
-    EventsSvc.index(userid)
-        .then((list) => res.send(list))
-        .catch((err) => res.status(500).send(err));
-});
 router.get("/:id", (req, res) => {
     const userid = getUserid(req, res);
     if (!userid)
         return;
     const { id } = req.params;
-    if (Array.isArray(id)) {
-        res.status(400).send();
+    if (Array.isArray(id) || !isDateId(id)) {
+        res.status(400).send({ error: "Invalid week identifier." });
         return;
     }
     EventsSvc.get(id, userid)
@@ -45,87 +55,97 @@ router.get("/:id", (req, res) => {
         else
             res.send(event);
     })
-        .catch((err) => res.status(404).send(err));
-});
-router.post("/", (req, res) => {
-    const userid = getUserid(req, res);
-    if (!userid)
-        return;
-    const newEvents = req.body;
-    EventsSvc.create(newEvents, userid)
-        .then((events) => res.status(201).json(events))
-        .catch((err) => res.status(500).send(err));
+        .catch(() => res.status(500).send({ error: "Unable to load events." }));
 });
 router.post("/:id/events", (req, res) => {
     const userid = getUserid(req, res);
     if (!userid)
         return;
     const { id } = req.params;
+    if (!isRecord(req.body)) {
+        res.status(400).send({ error: "Invalid event data." });
+        return;
+    }
     const { day, recurring, event } = req.body;
     if (Array.isArray(id) ||
-        !/^\d{4}-\d{2}-\d{2}$/.test(id) ||
+        !isDateId(id) ||
         typeof day !== "string" ||
         !weekdays.has(day) ||
         typeof recurring !== "boolean" ||
-        !event ||
+        !isRecord(event) ||
         typeof event.id !== "string" ||
-        !event.id ||
+        !event.id.trim() ||
+        event.id.length > 100 ||
         typeof event.title !== "string" ||
         !event.title.trim() ||
-        !optionalString(event.category) ||
-        !optionalString(event.date) ||
-        !optionalString(event.time) ||
-        !optionalString(event.location) ||
-        !optionalString(event.description) ||
-        !optionalString(event.notes)) {
+        event.title.length > 100 ||
+        !optionalString(event.category, 50) ||
+        !isOptionalDate(event.date) ||
+        !isOptionalTime(event.time) ||
+        !optionalString(event.location, 120) ||
+        !optionalString(event.description, 1000) ||
+        !optionalString(event.notes, 1000)) {
         res.status(400).send({ error: "Invalid event data." });
         return;
     }
     const newEvent = {
-        id: event.id,
+        id: event.id.trim(),
         title: event.title.trim(),
-        category: event.category?.trim(),
-        date: event.date,
-        time: event.time,
-        location: event.location?.trim(),
-        description: event.description?.trim(),
-        notes: event.notes?.trim()
+        category: cleanOptional(event.category),
+        date: cleanOptional(event.date),
+        time: cleanOptional(event.time),
+        location: cleanOptional(event.location),
+        description: cleanOptional(event.description),
+        notes: cleanOptional(event.notes)
     };
     EventsSvc.addEvent(id, day, recurring, newEvent, userid)
         .then((events) => res.status(201).json(events))
-        .catch(() => res.status(500).send({ error: "Unable to create event." }));
+        .catch((error) => {
+        if (error instanceof Error && error.message === "EVENT_ID_EXISTS") {
+            res.status(409).send({ error: "Event already exists." });
+        }
+        else {
+            res.status(500).send({ error: "Unable to create event." });
+        }
+    });
 });
 router.put("/:id/events/:eventid", (req, res) => {
     const userid = getUserid(req, res);
     if (!userid)
         return;
     const { id, eventid } = req.params;
+    if (!isRecord(req.body)) {
+        res.status(400).send({ error: "Invalid event data." });
+        return;
+    }
     const { event } = req.body;
     if (Array.isArray(id) ||
         Array.isArray(eventid) ||
-        !/^\d{4}-\d{2}-\d{2}$/.test(id) ||
+        !isDateId(id) ||
         !eventid ||
-        !event ||
+        eventid.length > 100 ||
+        !isRecord(event) ||
         typeof event.title !== "string" ||
         !event.title.trim() ||
-        !optionalString(event.category) ||
-        !optionalString(event.date) ||
-        !optionalString(event.time) ||
-        !optionalString(event.location) ||
-        !optionalString(event.description) ||
-        !optionalString(event.notes)) {
+        event.title.length > 100 ||
+        !optionalString(event.category, 50) ||
+        !isOptionalDate(event.date) ||
+        !isOptionalTime(event.time) ||
+        !optionalString(event.location, 120) ||
+        !optionalString(event.description, 1000) ||
+        !optionalString(event.notes, 1000)) {
         res.status(400).send({ error: "Invalid event data." });
         return;
     }
     const updatedEvent = {
         id: eventid,
         title: event.title.trim(),
-        category: event.category?.trim(),
-        date: event.date,
-        time: event.time,
-        location: event.location?.trim(),
-        description: event.description?.trim(),
-        notes: event.notes?.trim()
+        category: cleanOptional(event.category),
+        date: cleanOptional(event.date),
+        time: cleanOptional(event.time),
+        location: cleanOptional(event.location),
+        description: cleanOptional(event.description),
+        notes: cleanOptional(event.notes)
     };
     EventsSvc.updateEvent(id, eventid, updatedEvent, userid)
         .then((events) => {
@@ -143,8 +163,9 @@ router.delete("/:id/events/:eventid", (req, res) => {
     const { id, eventid } = req.params;
     if (Array.isArray(id) ||
         Array.isArray(eventid) ||
-        !/^\d{4}-\d{2}-\d{2}$/.test(id) ||
-        !eventid) {
+        !isDateId(id) ||
+        !eventid ||
+        eventid.length > 100) {
         res.status(400).send({ error: "Invalid event identifier." });
         return;
     }
@@ -156,37 +177,5 @@ router.delete("/:id/events/:eventid", (req, res) => {
             res.json(events);
     })
         .catch(() => res.status(500).send({ error: "Unable to delete event." }));
-});
-router.put("/:id", (req, res) => {
-    const userid = getUserid(req, res);
-    if (!userid)
-        return;
-    const { id } = req.params;
-    const newEvents = req.body;
-    if (Array.isArray(id)) {
-        res.status(400).send();
-        return;
-    }
-    EventsSvc.update(id, newEvents, userid)
-        .then((events) => {
-        if (!events)
-            res.status(404).end();
-        else
-            res.json(events);
-    })
-        .catch(() => res.status(404).end());
-});
-router.delete("/:id", (req, res) => {
-    const userid = getUserid(req, res);
-    if (!userid)
-        return;
-    const { id } = req.params;
-    if (Array.isArray(id)) {
-        res.status(400).send();
-        return;
-    }
-    EventsSvc.remove(id, userid)
-        .then(() => res.status(204).end())
-        .catch((err) => res.status(404).send(err));
 });
 export default router;
