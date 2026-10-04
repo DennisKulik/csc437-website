@@ -40,9 +40,7 @@ export class EventViewElement extends HTMLElement {
 
     view: Template<[Model]> = html`
         <main class="page">
-            <div class="event-layout">
-                ${($) => this.renderView($)}
-            </div>
+            ${($) => this.renderView($)}
         </main>
     `;
 
@@ -82,29 +80,53 @@ export class EventViewElement extends HTMLElement {
     renderView(model: Model) {
         if (!this.isCreating() && (model.eventsStatus === "idle" || model.eventsStatus === "loading")) {
             return html`
-                <article class="event-detail load-state card border-small" role="status" aria-live="polite">
-                    <h1>Loading events...</h1>
-                </article>
+                <div class="event-layout">
+                    ${this.renderEventListPlaceholder(model, "Loading this week...")}
+                    <article class="event-detail load-state card border-small" role="status" aria-live="polite">
+                        <h1>Loading events...</h1>
+                    </article>
+                </div>
             `;
         }
 
         if (!this.isCreating() && model.eventsStatus === "error") {
             return html`
-                <article class="event-detail load-state card border-small" role="alert">
-                    <h1>Events unavailable</h1>
-                    <p>${model.eventsError || "This week could not be loaded."}</p>
-                    <button type="button" class="button hover-lift retry-events-button">
-                        Try Again
-                    </button>
-                </article>
+                <div class="event-layout">
+                    ${this.renderEventListPlaceholder(model, "Event list unavailable.")}
+                    <article class="event-detail load-state card border-small" role="alert">
+                        <h1>Events unavailable</h1>
+                        <p>${model.eventsError || "This week could not be loaded."}</p>
+                        <button type="button" class="button hover-lift retry-events-button">
+                            Try Again
+                        </button>
+                    </article>
+                </div>
             `;
         }
 
         return html`
-            ${this.renderEventList(model)}
-            ${this.isCreating() || this.isEditing()
-                ? this.renderEventForm(model)
-                : this.renderEventDetail(model)}
+            <div class="event-layout">
+                ${[
+                    this.renderEventList(model),
+                    this.isCreating() || this.isEditing()
+                    ? this.renderEventForm(model)
+                    : this.renderEventDetail(model)
+                ]}
+            </div>
+        `;
+    }
+
+    renderEventListPlaceholder(model: Model, message: string) {
+        const weekid = model.currentWeekId || this.getRequestedWeekId() || EventViewElement.getCurrentWeekId();
+
+        return html`
+            <aside class="event-list card border-small" aria-label="Events">
+                <div class="list-header">
+                    <p class="eyebrow">Week of ${this.formatWeek(weekid)}</p>
+                    <h2>Events</h2>
+                </div>
+                <p class="empty-list">${message}</p>
+            </aside>
         `;
     }
 
@@ -474,9 +496,20 @@ export class EventViewElement extends HTMLElement {
         .event-layout {
             grid-column: 1 / -1;
             display: grid;
+            grid-template-areas: "list detail";
             grid-template-columns: minmax(220px, 2fr) minmax(0, 5fr);
             gap: var(--padding-standard);
             margin: var(--padding-standard);
+        }
+
+        .event-list {
+            grid-area: list;
+            min-width: 0;
+        }
+
+        .event-detail {
+            grid-area: detail;
+            min-width: 0;
         }
 
         .event-list,
@@ -487,7 +520,6 @@ export class EventViewElement extends HTMLElement {
         }
 
         .load-state {
-            grid-column: 1 / -1;
             text-align: center;
         }
 
@@ -742,6 +774,9 @@ export class EventViewElement extends HTMLElement {
 
         @media (max-width: 700px) {
             .event-layout {
+                grid-template-areas:
+                    "list"
+                    "detail";
                 grid-template-columns: 1fr;
                 gap: var(--padding-small);
                 margin: var(--padding-small);
