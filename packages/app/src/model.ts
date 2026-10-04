@@ -7,6 +7,8 @@ export interface Model {
     eventsStatus: LoadStatus;
     eventsError?: string;
     tasks?: Tasks;
+    tasksStatus?: LoadStatus;
+    tasksError?: string;
     user?: UserProfile;
     userStatus: LoadStatus;
     userError?: string;
@@ -14,6 +16,7 @@ export interface Model {
 }
 
 export const init: Model = {
+    tasksStatus: "idle",
     eventsStatus: "idle",
     userStatus: "idle"
 };

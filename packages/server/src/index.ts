@@ -3,6 +3,7 @@ import express, { NextFunction, Request, Response } from "express";
 
 import EventsRouter from "./routes/events.ts";
 import UsersRouter from "./routes/users.ts";
+import TasksRouter from "./routes/tasks.ts";
 
 import auth from "./routes/auth.ts";
 import { authenticateUser } from "./routes/auth.ts";
@@ -17,6 +18,7 @@ app.use(express.json({ limit: "100kb" }));
 
 app.use("/api/events", authenticateUser, EventsRouter);
 app.use("/api/users", authenticateUser, UsersRouter);
+app.use("/api/tasks", authenticateUser, TasksRouter);
 app.use("/auth", auth);
 
 app.use("/app", (req: Request, res: Response) => {

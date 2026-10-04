@@ -13,6 +13,8 @@ type SaveCallbacks = {
 
 export type Cmd =
     | ["tasks/load", { tasks: Tasks }]
+    | ["tasks/fail", { error: string }]
+    | ["tasks/unchanged", {}]
     | ["events/load", { events: Events }]
     | ["events/fail", { error: string }]
     | ["user/load", { user: UserProfile }]
@@ -28,15 +30,32 @@ export default function update(
     switch (type) {
         case "tasks/request":
             return [
-                { ...model },
-                requestTasks(auth)
+                { ...model, tasksStatus: "loading", tasksError: undefined },
+                requestTasks(auth).catch((): Cmd => ["tasks/fail", {
+                    error: "Your tasks could not be loaded. Check the connection and try again."
+                }])
             ];
         
         case "tasks/load":
             return {
                 ...model,
-                tasks: payload.tasks
+                tasks: payload.tasks,
+                tasksStatus: "ready",
+                tasksError: undefined
             };
+
+        case "tasks/fail":
+            return { ...model, tasksStatus: "error", tasksError: payload.error };
+        case "tasks/unchanged":
+            return { ...model };
+        case "tasks/create":
+            return [{ ...model }, taskWrite("/api/tasks", "POST", { task: payload.task }, auth, message[2])];
+        case "tasks/update":
+            return [{ ...model }, taskWrite(`/api/tasks/${encodeURIComponent(payload.taskid)}`, "PUT", { task: payload.task }, auth, message[2])];
+        case "tasks/delete":
+            return [{ ...model }, taskWrite(`/api/tasks/${encodeURIComponent(payload.taskid)}`, "DELETE", undefined, auth, message[2])];
+        case "tasks/complete":
+            return [{ ...model }, taskWrite(`/api/tasks/${encodeURIComponent(payload.taskid)}/completion`, "PATCH", { completed: payload.completed }, auth, message[2])];
 
         case "events/request":
             if (model.events?.id === payload.weekid) {
@@ -240,6 +259,22 @@ function requestTasks(auth: Auth.Model): Promise<Cmd> {
             return res.json();
         })
         .then((tasks: Tasks) => ["tasks/load", { tasks }]);
+}
+
+function taskWrite(path: string, method: string, body: unknown, auth: Auth.Model, callbacks: SaveCallbacks): Promise<Cmd> {
+    return apiFetch(path, {
+        method,
+        headers: { "Content-Type": "application/json", ...authorization(auth) },
+        body: body === undefined ? undefined : JSON.stringify(body)
+    }).then(async (res) => {
+        if (!res.ok) throw new Error(`Task save failed: ${res.status}`);
+        const tasks: Tasks = await res.json();
+        callbacks.onSuccess?.();
+        return ["tasks/load", { tasks }] as Cmd;
+    }).catch((err: Error): Cmd => {
+        callbacks.onFailure?.(err);
+        return ["tasks/unchanged", {}];
+    });
 }
 
 function requestEvents(weekid: string, auth: Auth.Model): Promise<Cmd> {

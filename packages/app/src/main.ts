@@ -19,8 +19,14 @@ import { MomentumTasksHolder } from "./components/tasks-holder.ts";
 import { HomeViewElement } from "./views/home-view.ts";
 import { UserViewElement } from "./views/user-view.ts";
 import { EventViewElement } from "./views/event-view.ts";
+import { TaskViewElement } from "./views/task-view.ts";
 
 const routes: Switch.Route[] = [
+        {
+            path: "/app/task",
+            auth: "protected",
+            view: html`<task-view></task-view>`
+        },
         {
             path: "/app/user",
             auth: "protected",
@@ -69,5 +75,6 @@ define ({
 
     "home-view": HomeViewElement,
     "user-view": UserViewElement,
-    "event-view": EventViewElement
+    "event-view": EventViewElement,
+    "task-view": TaskViewElement
 });

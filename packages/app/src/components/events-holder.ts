@@ -247,7 +247,8 @@ export class MomentumEventsHolder extends HTMLElement {
     
     static styles = css`
         :host {
-            grid-column: start / end;
+            grid-column: 4 / end;
+            min-width: 0;
         }
         
         @media (max-width: 1100px) {

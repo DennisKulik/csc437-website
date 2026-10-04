@@ -6,6 +6,7 @@ export class HomeViewElement extends HTMLElement {
     static template = html`
         <template>
             <div class="page">
+                <momentum-tasks-holder></momentum-tasks-holder>
                 <momentum-events-holder></momentum-events-holder>
             </div>
         </template>
@@ -21,6 +22,7 @@ export class HomeViewElement extends HTMLElement {
     static styles = css`
         .page {
             display: grid;
+            align-items: start;
             grid-template-columns: [start] repeat(8, 1fr) [end]
         }
 

@@ -4,7 +4,8 @@ import test from "node:test";
 import {
     loginFromRequest,
     profileFromRequest,
-    registrationFromRequest
+    registrationFromRequest,
+    taskFromRequest
 } from "../dist/request-validation.js";
 
 test("registration validation normalizes a valid account", () => {
@@ -27,6 +28,27 @@ test("registration validation normalizes a valid account", () => {
             profilePicture: ""
         }
     });
+});
+
+test("task validation normalizes editable fields and ignores ownership and completion metadata", () => {
+    assert.deepEqual(taskFromRequest({
+        title: "  Write notes  ", description: "  Description  ", notes: "",
+        dueDate: "2028-02-29", category: " School ", categoryColor: "#6c71c4",
+        userid: "another-user", completed: true, completedAt: "forged"
+    }), {
+        title: "Write notes", description: "Description", notes: undefined,
+        dueDate: "2028-02-29", category: "School", categoryColor: "#6c71c4"
+    });
+    assert.equal(taskFromRequest({ title: "No deadline" }).dueDate, undefined);
+});
+
+test("task validation rejects invalid titles, dates, colors, and oversized text", () => {
+    for (const invalid of [null, [], { title: " " }, { title: "x".repeat(101) },
+        { title: "Task", dueDate: "2026-02-29" }, { title: "Task", dueDate: "not-a-date" },
+        { title: "Task", categoryColor: "url(bad)" }, { title: "Task", notes: "x".repeat(1001) },
+        { title: "Task", description: 42 }]) {
+        assert.equal(taskFromRequest(invalid), undefined);
+    }
 });
 
 test("registration rejects invalid usernames, short passwords, and missing profiles", () => {

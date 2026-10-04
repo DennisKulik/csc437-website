@@ -1,4 +1,4 @@
-import type { Event, Events, Tasks, UserProfile } from "server/models";
+import type { Event, Events, TaskDetails, Tasks, UserProfile } from "server/models";
 
 type SaveCallbacks = {
     onSuccess?: () => void;
@@ -8,6 +8,10 @@ type SaveCallbacks = {
 export type Msg =
     | ["tasks/request", {}]
     | ["tasks/load", { tasks: Tasks }]
+    | ["tasks/create", { task: TaskDetails & { id: string } }, SaveCallbacks]
+    | ["tasks/update", { taskid: string; task: TaskDetails }, SaveCallbacks]
+    | ["tasks/delete", { taskid: string }, SaveCallbacks]
+    | ["tasks/complete", { taskid: string; completed: boolean }, SaveCallbacks]
     | ["events/request", { weekid: string }]
     | ["events/load", { events: Events }]
     | [

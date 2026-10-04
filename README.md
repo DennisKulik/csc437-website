@@ -6,11 +6,13 @@ The application uses a TypeScript front end built with Vite and Web Components, 
 
 ## Current status
 
-The application currently supports account registration and login, editable user profiles, and authenticated weekly event data. Users can create, view, edit, and delete one-time events or weekly recurring series. Weekly events appear on the same weekday from their start date onward; editing or deleting applies to the entire series. The earlier task workflow is being held outside the active interface until it has the same level of persistence and interaction. A public demo and visual project walkthrough will be added after the remaining portfolio-readiness work is complete.
+The application currently supports account registration and login, editable user profiles, authenticated weekly events, and account-owned tasks. Users can create, view, edit, and delete one-time events or weekly recurring series. Weekly events appear on the same weekday from their start date onward; editing or deleting applies to the entire series. A public demo and visual project walkthrough will be added after the remaining portfolio-readiness work is complete.
 
 Events can be moved to another day or week by editing their date. Changing a weekly series' start date moves the entire series, not just one occurrence. Categories support preset or custom names, a color accent on event cards, and filtering the selected week. The This Week button returns the planner to the current week.
 
 Recurrence currently supports weekly repetition without an end date. Individual-occurrence exceptions and other repeat intervals are not implemented. Older events saved under the previous recurring label remain limited to their original week.
+
+Tasks are independent of event weeks, with optional due dates, categories/colors, descriptions, and notes. Users can create, edit, delete, complete, and reopen tasks. The homepage keeps active tasks above completed tasks; completed titles are struck through and faded, newest completion first. It shows the three latest completions by default, with controls to reveal the full list or hide it. Clicking a task opens its dedicated detail/edit page.
 
 ## Technology
 
@@ -97,7 +99,7 @@ Run these commands from the repository root:
 | `npm test` | Run fast server validation and configuration tests |
 | `npm run test:integration` | Run the temporary-record Atlas integration test |
 
-The integration test requires the configured `.env` file. It starts the API on a test port, exercises registration, profile ownership, event persistence, and recurring series across weeks, then removes its uniquely named credential, profile, and event records.
+The integration test requires the configured `.env` file. It starts the API on a test port, exercises registration, profile ownership, event persistence, recurring series across weeks, and the task lifecycle/ownership rules, then removes its uniquely named credential, profile, event, and task records.
 
 ## Deployment
 

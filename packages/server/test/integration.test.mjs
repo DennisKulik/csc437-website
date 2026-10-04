@@ -16,11 +16,12 @@ const password = "temporary-test-password";
 let server;
 let databaseClient;
 
-test("registration, profile ownership, and event persistence", async (context) => {
+test("registration, ownership, event persistence, and task lifecycle", async (context) => {
     context.after(async () => {
         if (databaseClient) {
             const database = databaseClient.db("WebDev437");
             const identities = [username, `${username}-other`];
+            await database.collection("tasks").deleteMany({ userid: { $in: identities } });
             await database.collection("events").deleteMany({ userid: { $in: identities } });
             await database.collection("users").deleteMany({ userid: { $in: identities } });
             await database.collection("user_credentials").deleteMany({ username: { $in: identities } });
@@ -210,6 +211,78 @@ test("registration, profile ownership, and event persistence", async (context) =
         body: { event: { title: "Invalid color", categoryColor: "url(bad)" } }
     });
     assert.equal(invalidColor.status, 400);
+
+    assert.equal((await request("/api/tasks")).status, 401);
+    const getTasks = async (headers = authorization) => (await request("/api/tasks", { headers })).json();
+    assert.deepEqual(await getTasks(), { tasks: [] });
+    const createTask = (id, extra = {}) => request("/api/tasks", {
+        method: "POST", headers: authorization,
+        body: { task: { id, title: `Task ${id}`, ...extra } }
+    });
+    assert.equal((await createTask("task-one", {
+        dueDate: "2100-01-07", category: "Work", categoryColor: "#268bd2",
+        userid: `${username}-other`, completed: true
+    })).status, 201);
+    assert.equal((await createTask("task-two")).status, 201);
+    assert.equal((await createTask("task-one")).status, 409);
+    assert.equal((await createTask("bad-task", { dueDate: "2100-02-29" })).status, 400);
+    const firstTasks = (await getTasks()).tasks;
+    assert.equal(firstTasks.length, 2);
+    assert.equal(firstTasks.find((task) => task.id === "task-one").userid, username);
+    assert.equal(firstTasks.every((task) => !task.completed), true);
+    assert.equal((await getTasks(otherAuthorization)).tasks.length, 0);
+    for (const [method, suffix, body] of [
+        ["PUT", "", { task: { title: "Unauthorized" } }],
+        ["PATCH", "/completion", { completed: true }],
+        ["DELETE", "", undefined]
+    ]) {
+        assert.equal((await request(`/api/tasks/task-one${suffix}`, {
+            method, headers: otherAuthorization, body
+        })).status, 404);
+    }
+    const completeTask = (id, completed) => request(`/api/tasks/${id}/completion`, {
+        method: "PATCH", headers: authorization, body: { completed }
+    });
+    assert.equal((await completeTask("task-two", true)).status, 200);
+    assert.equal((await completeTask("task-one", true)).status, 200);
+    const completedTasks = (await getTasks()).tasks;
+    assert.deepEqual(completedTasks.map((task) => task.id), ["task-one", "task-two"]);
+    assert.equal(completedTasks.every((task) => Boolean(task.completedAt)), true);
+    assert.equal((await completeTask("task-two", true)).status, 200);
+    assert.deepEqual((await getTasks()).tasks, completedTasks);
+    assert.equal((await completeTask("task-one", false)).status, 200);
+    const reopened = (await getTasks()).tasks;
+    assert.equal(reopened[0].id, "task-one");
+    assert.equal(reopened[0].completed, false);
+    assert.equal(reopened[0].completedAt, undefined);
+    assert.equal((await completeTask("task-one", "yes")).status, 400);
+    const taskUpdate = await request("/api/tasks/task-one", {
+        method: "PUT", headers: authorization,
+        body: { task: { title: "Updated task", description: "Saved description", notes: "Saved notes", dueDate: "", category: "Personal", categoryColor: "#859900" } }
+    });
+    assert.equal(taskUpdate.status, 200);
+    const updatedTask = (await taskUpdate.json()).tasks.find((task) => task.id === "task-one");
+    assert.equal(updatedTask.title, "Updated task");
+    assert.equal(updatedTask.dueDate, undefined);
+    assert.equal(updatedTask.notes, "Saved notes");
+    assert.equal(updatedTask.categoryColor, "#859900");
+    assert.equal(updatedTask.id, "task-one");
+    assert.equal(updatedTask.createdAt, firstTasks.find((task) => task.id === "task-one").createdAt);
+    const editCompleted = await request("/api/tasks/task-two", {
+        method: "PUT", headers: authorization, body: { task: { title: "Edited completed task" } }
+    });
+    assert.equal(editCompleted.status, 200);
+    const stillCompleted = (await editCompleted.json()).tasks.find((task) => task.id === "task-two");
+    assert.equal(stillCompleted.completed, true);
+    assert.equal(stillCompleted.completedAt, completedTasks.find((task) => task.id === "task-two").completedAt);
+    const taskDocuments = await databaseClient.db("WebDev437").collection("tasks").find({ userid: username }).toArray();
+    assert.equal(taskDocuments.length, 2);
+    assert.equal(taskDocuments.every((task) => !Object.hasOwn(task, "week")), true);
+    for (const id of ["task-one", "task-two"]) {
+        assert.equal((await request(`/api/tasks/${id}`, { method: "DELETE", headers: authorization })).status, 200);
+    }
+    assert.deepEqual(await getTasks(), { tasks: [] });
+    assert.equal((await request("/api/tasks/task-one", { method: "DELETE", headers: authorization })).status, 404);
 });
 
 async function startServer() {

@@ -1,4 +1,4 @@
-import type { UserProfile } from "./models/index.ts";
+import type { TaskDetails, UserProfile } from "./models/index.ts";
 
 export type RegistrationData = {
     username: string;
@@ -13,6 +13,28 @@ export type LoginData = {
 
 export function isRecord(value: unknown): value is Record<string, unknown> {
     return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+
+export function taskFromRequest(body: unknown): TaskDetails | undefined {
+    if (!isRecord(body)) return undefined;
+    const { title, description, notes, dueDate, category, categoryColor } = body;
+    const optionalText = (value: unknown, limit: number) => value === undefined ||
+        (typeof value === "string" && value.length <= limit);
+    const clean = (value: unknown) => typeof value === "string" ? value.trim() || undefined : undefined;
+    if (typeof title !== "string" || !title.trim() || title.length > 100 ||
+        !optionalText(description, 1000) || !optionalText(notes, 1000) ||
+        !optionalText(category, 50) ||
+        !(dueDate === undefined || dueDate === "" || (typeof dueDate === "string" &&
+            /^\d{4}-\d{2}-\d{2}$/.test(dueDate) &&
+            !Number.isNaN(new Date(`${dueDate}T00:00:00Z`).getTime()) &&
+            new Date(`${dueDate}T00:00:00Z`).toISOString().slice(0, 10) === dueDate)) ||
+        !(categoryColor === undefined || categoryColor === "" ||
+            (typeof categoryColor === "string" && /^#[0-9a-f]{6}$/i.test(categoryColor)))
+    ) return undefined;
+    return {
+        title: title.trim(), description: clean(description), notes: clean(notes),
+        dueDate: clean(dueDate), category: clean(category), categoryColor: clean(categoryColor)
+    };
 }
 
 export function profileFromRequest(
