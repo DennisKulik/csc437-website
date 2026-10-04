@@ -1,6 +1,7 @@
 import { css, html, shadow, type Template } from "@unbndl/html";
 import { createViewModel } from "@unbndl/view";
 import { Store, fromStore } from "@unbndl/store";
+import { fromHistory } from "@unbndl/switch";
 
 import type { Event, Events } from "server/models";
 import type { Model } from "../model.ts";
@@ -15,6 +16,8 @@ type EventSummary = {
     recurring: boolean;
 };
 
+type EventViewModel = Model & { location?: Location };
+
 export class EventViewElement extends HTMLElement {
     static weekdays = [
         "Sunday",
@@ -26,19 +29,20 @@ export class EventViewElement extends HTMLElement {
         "Saturday"
     ];
 
-    viewModel = createViewModel<Model>({
+    viewModel = createViewModel<EventViewModel>({
         eventsStatus: "idle",
         userStatus: "idle"
     })
         .with(
-            fromStore<Model>(this),
+            fromStore<EventViewModel>(this),
             "events",
             "eventsStatus",
             "eventsError",
             "currentWeekId"
-        );
+        )
+        .with(fromHistory(this), "location");
 
-    view: Template<[Model]> = html`
+    view: Template<[EventViewModel]> = html`
         <main class="page">
             ${($) => this.renderView($)}
         </main>
@@ -77,8 +81,12 @@ export class EventViewElement extends HTMLElement {
         Store.dispatch(this, ["events/request", { weekid }]);
     }
 
-    renderView(model: Model) {
-        if (!this.isCreating() && (model.eventsStatus === "idle" || model.eventsStatus === "loading")) {
+    renderView(model: EventViewModel) {
+        // Query-only navigation reuses this component, so rendering must observe history.
+        const query = new URLSearchParams(model.location?.search || window.location.search);
+        const creating = query.get("new") === "true";
+        const editing = query.get("edit") === "true";
+        if (!creating && (model.eventsStatus === "idle" || model.eventsStatus === "loading")) {
             return html`
                 <div class="event-layout">
                     ${this.renderEventListPlaceholder(model, "Loading this week...")}
@@ -89,7 +97,7 @@ export class EventViewElement extends HTMLElement {
             `;
         }
 
-        if (!this.isCreating() && model.eventsStatus === "error") {
+        if (!creating && model.eventsStatus === "error") {
             return html`
                 <div class="event-layout">
                     ${this.renderEventListPlaceholder(model, "Event list unavailable.")}
@@ -108,7 +116,7 @@ export class EventViewElement extends HTMLElement {
             <div class="event-layout">
                 ${[
                     this.renderEventList(model),
-                    this.isCreating() || this.isEditing()
+                    creating || editing
                     ? this.renderEventForm(model)
                     : this.renderEventDetail(model)
                 ]}
@@ -175,7 +183,7 @@ export class EventViewElement extends HTMLElement {
             ? `/app/event?week=${encodeURIComponent(weekid)}&event=${encodeURIComponent(eventKey)}`
             : `/app?week=${encodeURIComponent(weekid)}`;
 
-        return html`
+        const formView = html`
             <article class="event-detail card border-small">
                 <header class="detail-header">
                     <div>
@@ -237,12 +245,12 @@ export class EventViewElement extends HTMLElement {
 
                     <label>
                         Description
-                        <textarea name="description" rows="4" maxlength="1000">${existingEvent?.description || ""}</textarea>
+                        <textarea name="description" rows="4" maxlength="1000"></textarea>
                     </label>
 
                     <label>
                         Notes
-                        <textarea name="notes" rows="3" maxlength="1000">${existingEvent?.notes || ""}</textarea>
+                        <textarea name="notes" rows="3" maxlength="1000"></textarea>
                     </label>
 
                     <p class="form-error" role="alert" aria-live="polite"></p>
@@ -254,6 +262,12 @@ export class EventViewElement extends HTMLElement {
                 </form>
             </article>
         `;
+
+        const description = formView.querySelector<HTMLTextAreaElement>('textarea[name="description"]');
+        const notes = formView.querySelector<HTMLTextAreaElement>('textarea[name="notes"]');
+        if (description) description.value = existingEvent?.description || "";
+        if (notes) notes.value = existingEvent?.notes || "";
+        return formView;
     }
 
     renderEventDetail(model: Model) {
