@@ -8,7 +8,11 @@ import jwt from "jsonwebtoken";
 import credentials from "../services/credential-svc.ts";
 import UsersSvc from "../services/user-svc.ts";
 import { config } from "../config.ts";
-import { isRecord, profileFromRequest } from "../request-validation.ts";
+import {
+    isRecord,
+    loginFromRequest,
+    registrationFromRequest
+} from "../request-validation.ts";
 
 type AuthTokenPayload = {
     username: string;
@@ -24,46 +28,19 @@ declare global {
 
 const router = express.Router();
 
-function registrationUsername(value: unknown): string | undefined {
-    if (typeof value !== "string") return undefined;
-
-    const username = value.trim();
-    if (
-        username.length < 3 ||
-        username.length > 50 ||
-        !/^[A-Za-z0-9._-]+$/.test(username)
-    ) {
-        return undefined;
-    }
-
-    return username;
-}
-
 function isDuplicateKey(error: unknown): boolean {
     return isRecord(error) && error.code === 11000;
 }
 
 router.post("/register", async (req: Request, res: Response) => {
-    if (!isRecord(req.body)) {
+    const registration = registrationFromRequest(req.body);
+
+    if (!registration) {
         res.status(400).send({ error: "Invalid registration data." });
         return;
     }
 
-    const username = registrationUsername(req.body.username);
-    const password = req.body.password;
-    const profile = username ? profileFromRequest(req.body, username) : undefined;
-
-    if (
-        !username ||
-        typeof password !== "string" ||
-        password.length < 8 ||
-        password.length > 128 ||
-        !profile
-    ) {
-        res.status(400).send({ error: "Invalid registration data." });
-        return;
-    }
-
+    const { username, password, profile } = registration;
     let credentialCreated = false;
 
     try {
@@ -84,19 +61,12 @@ router.post("/register", async (req: Request, res: Response) => {
 });
 
 router.post("/login", (req: Request, res: Response) => {
-    if (!isRecord(req.body)) {
-        res.status(400).send({ error: "Invalid login data." });
-        return;
-    }
+    const login = loginFromRequest(req.body);
 
-    const username = typeof req.body.username === "string"
-        ? req.body.username.trim()
-        : undefined;
-    const password = req.body.password;
-
-    if (!username || typeof password !== "string" || !password) {
+    if (!login) {
         res.status(400).send({ error: "Invalid login data." });
     } else {
+        const { username, password } = login;
         credentials
             .verify(username, password)
             .then((goodUser: string) => generateAccessToken(goodUser))

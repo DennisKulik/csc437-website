@@ -7,7 +7,8 @@
     "dev:server": "npm run dev --workspace=server",
     "build": "npm run build --workspace=app && npm run build --workspace=server",
     "check": "npm exec --workspace=app -- tsc --noEmit && npm run check --workspace=server",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "npm run test --workspace=server",
+    "test:integration": "npm run test:integration --workspace=server"
   },
   "repository": {
     "type": "git",

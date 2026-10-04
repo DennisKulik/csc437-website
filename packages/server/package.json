@@ -11,6 +11,8 @@
 	"scripts": {
 		"dev": "nodemon",
 		"build": "npx tsc",
+		"test": "npm run build && node --test test/config.test.mjs test/request-validation.test.mjs",
+		"test:integration": "npm run build && node --test test/integration.test.mjs",
 
 		"start": "npm run build && npm run start:node",
 		"start:node": "node dist/index.js",

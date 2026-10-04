@@ -90,7 +90,11 @@ Run these commands from the repository root:
 | `npm run dev:server` | Compile and restart the Express server when source files change |
 | `npm run check` | Type-check the front end and server without emitting files |
 | `npm run build` | Create production builds for the front end and server |
+| `npm test` | Run fast server validation and configuration tests |
+| `npm run test:integration` | Run the temporary-record Atlas integration test |
+
+The integration test requires the configured `.env` file. It starts the API on a test port, exercises registration, profile ownership, and event persistence, then removes its uniquely named credential, profile, and event records.
 
 ## Deployment
 
-The intended production arrangement is a Node web service that serves both the compiled Vite application and the Express API, backed by MongoDB Atlas. Deployment configuration and a public demo URL will be documented once the primary application flows are ready to present.
+The intended production arrangement is one Node web service that serves both the compiled Vite application and the Express API, backed by MongoDB Atlas. See the [deployment plan](docs/DEPLOYMENT.md) for the exact Render settings, environment variables, Atlas network configuration, and verification checklist.
