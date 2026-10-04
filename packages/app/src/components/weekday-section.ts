@@ -110,6 +110,12 @@ export class MomentumWeekdaySection extends HTMLElement {
             padding: 0;
             margin: 0;
         }
+
+        .event-list slot {
+            display: flex;
+            flex-direction: column;
+            gap: var(--padding-tiny);
+        }
         
         ::slotted(li) {
             list-style: none;

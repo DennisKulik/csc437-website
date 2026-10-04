@@ -122,6 +122,9 @@ export default function update(
                     })
             ];
             
+        case "events/week-current":
+            return update(model, ["events/request", { weekid: getCurrentWeekId() }], auth);
+
         case "events/week-next": {
             const currentWeekId = model.currentWeekId || model.events?.id || getCurrentWeekId();
             const nextWeekId = shiftWeek(currentWeekId, 7);

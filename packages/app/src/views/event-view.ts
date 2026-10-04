@@ -1,7 +1,8 @@
 import { css, html, shadow, type Template } from "@unbndl/html";
 import { createViewModel } from "@unbndl/view";
 import { Store, fromStore } from "@unbndl/store";
-import { fromHistory } from "@unbndl/switch";
+import { BrowserHistory, fromHistory } from "@unbndl/switch";
+import { categories, categoryColor } from "../categories.ts";
 
 import type { Event, Events } from "server/models";
 import type { Model } from "../model.ts";
@@ -54,7 +55,8 @@ export class EventViewElement extends HTMLElement {
             .styles(reset.styles, page.styles, card.styles, button.styles, EventViewElement.styles)
             .replace(this.viewModel.render(this.view))
             .listen({
-                submit: (event: globalThis.Event) => this.submitEventForm(event)
+                submit: (event: globalThis.Event) => this.submitEventForm(event),
+                change: (event: globalThis.Event) => this.changeEventFields(event)
             })
             .delegate(".delete-event-button", {
                 click: () => this.deleteSelectedEvent()
@@ -62,6 +64,17 @@ export class EventViewElement extends HTMLElement {
             .delegate(".retry-events-button", {
                 click: () => this.requestWeek()
             });
+        this.viewModel.createEffect(($) => {
+            const location = $.location;
+            if (!location || location.pathname !== "/app/event") return;
+            const query = new URLSearchParams(location.search);
+            const weekid = query.get("week");
+            if (!weekid || query.get("new") === "true") return;
+            const current = this.viewModel.toObject();
+            if (current.currentWeekId !== weekid) {
+                Store.dispatch(this, ["events/request", { weekid }]);
+            }
+        });
     }
 
     connectedCallback() {
@@ -177,7 +190,7 @@ export class EventViewElement extends HTMLElement {
 
         const existingEvent = editing ? selected?.event : undefined;
         const weekid = this.getRequestedWeekId() || model.currentWeekId || EventViewElement.getCurrentWeekId();
-        const day = selected?.day || this.getRequestedDay();
+        const day = editing ? selected!.day : this.getRequestedDay();
         const eventKey = existingEvent?.id || existingEvent?.title;
         const cancelHref = editing && eventKey
             ? `/app/event?week=${encodeURIComponent(weekid)}&event=${encodeURIComponent(eventKey)}`
@@ -209,8 +222,8 @@ export class EventViewElement extends HTMLElement {
                         </label>
 
                         <label>
-                            Date
-                            <input name="date" type="date" value=${existingEvent?.date || this.getDateForDay(weekid, day)} />
+                            ${existingEvent?.recurrenceStart ? "Series start date" : "Date"}
+                            <input name="date" type="date" value=${existingEvent?.recurrenceStart || existingEvent?.date || this.getDateForDay(weekid, day)} />
                         </label>
 
                         <label>
@@ -222,19 +235,32 @@ export class EventViewElement extends HTMLElement {
                     ${editing
                         ? html`
                             <input name="recurring" type="hidden" value=${selected?.recurring ? "on" : "off"} />
-                            <p class="event-type">${selected?.recurring ? "Recurring event" : "One-time event"}</p>
+                            <p class="event-type">${existingEvent?.recurrenceStart
+                                ? "Repeats weekly. Changing the start date moves the entire series to that weekday; all edits apply to the series."
+                                : selected?.recurring
+                                    ? "Older recurring label: this event appears only in its saved week."
+                                    : "One-time event"}</p>
                         `
                         : html`
                             <label class="checkbox-label">
                                 <input name="recurring" type="checkbox" />
-                                Recurring event
+                                Repeat weekly on ${day}
                             </label>
+                            <p class="recurrence-help">Weekly events start on the selected day and repeat every week. Editing or deleting applies to the entire series.</p>
                         `}
 
                     <div class="form-row">
                         <label>
                             Category
-                            <input name="category" type="text" maxlength="50" value=${existingEvent?.category || ""} />
+                            <input name="category" type="text" list="event-categories" maxlength="50" value=${existingEvent?.category || ""} placeholder="Choose or enter a category" />
+                            <datalist id="event-categories">
+                                ${categories.map((category) => html`<option value=${category.name}></option>`)}
+                            </datalist>
+                        </label>
+
+                        <label>
+                            Category color
+                            <input name="categoryColor" type="color" value=${categoryColor(existingEvent?.category, existingEvent?.categoryColor)} />
                         </label>
 
                         <label>
@@ -293,11 +319,15 @@ export class EventViewElement extends HTMLElement {
             <article class="event-detail card border-small">
                 <header class="detail-header">
                     <div>
-                        <p class="eyebrow">${selected.recurring ? "Recurring event" : "One-time event"}</p>
+                        <p class="eyebrow">${event.recurrenceStart ? "Weekly event" : selected.recurring ? "Recurring label" : "One-time event"}</p>
                         <h1>${event.title}</h1>
                     </div>
                     <p class="status">${selected.day}</p>
                 </header>
+
+                ${event.recurrenceStart ? html`
+                    <p class="recurrence-help">Repeats every ${selected.day} from ${event.recurrenceStart}. Editing or deleting applies to the entire series.</p>
+                ` : ""}
 
                 <dl class="detail-meta">
                     <div><dt>Category</dt><dd>${event.category || "Not specified"}</dd></div>
@@ -318,8 +348,8 @@ export class EventViewElement extends HTMLElement {
 
                 ${event.id ? html`
                     <div class="detail-controls">
-                        <a class="button hover-lift edit-link" href=${editHref}>Edit Event</a>
-                        <button type="button" class="button hover-lift delete-event-button">Delete Event</button>
+                        <a class="button hover-lift edit-link" href=${editHref}>${event.recurrenceStart ? "Edit Series" : "Edit Event"}</a>
+                        <button type="button" class="button hover-lift delete-event-button">${event.recurrenceStart ? "Delete Series" : "Delete Event"}</button>
                     </div>
                     <p class="detail-error" role="alert" aria-live="polite"></p>
                 ` : html`
@@ -327,6 +357,38 @@ export class EventViewElement extends HTMLElement {
                 `}
             </article>
         `;
+    }
+
+    changeEventFields(domEvent: globalThis.Event) {
+        const checkbox = domEvent.target as HTMLInputElement;
+        const form = checkbox.form;
+        if (!form) return;
+        if (checkbox.name === "category") {
+            const color = form.querySelector<HTMLInputElement>('input[name="categoryColor"]');
+            if (color) color.value = categoryColor(checkbox.value);
+            return;
+        }
+        if (checkbox.name === "date" && checkbox.value && !checkbox.readOnly) {
+            const chosenDate = new Date(`${checkbox.value}T00:00:00`);
+            const day = EventViewElement.weekdays[chosenDate.getDay()];
+            const dayInput = form.querySelector<HTMLInputElement>('input[name="day"]');
+            const dayLabel = form.querySelector(".readonly-input");
+            if (dayInput) dayInput.value = day;
+            if (dayLabel) dayLabel.textContent = day;
+            const recurring = form.querySelector<HTMLInputElement>('input[type="checkbox"][name="recurring"]');
+            if (recurring?.parentElement) recurring.parentElement.lastChild!.textContent = ` Repeat weekly on ${day}`;
+            return;
+        }
+        if (checkbox.name !== "recurring" || checkbox.type !== "checkbox") return;
+        const data = new FormData(form);
+        const date = form.querySelector<HTMLInputElement>('input[name="date"]');
+        if (date) {
+            date.readOnly = checkbox.checked;
+            if (checkbox.checked) {
+                // The date determines the weekday and week when a new event is saved.
+                if (!date.value) date.value = this.getDateForDay(String(data.get("weekid")), String(data.get("day")));
+            }
+        }
     }
 
     submitEventForm(domEvent: globalThis.Event) {
@@ -343,6 +405,7 @@ export class EventViewElement extends HTMLElement {
             id: existingEventId || crypto.randomUUID(),
             title: String(data.get("title") || "").trim(),
             category: String(data.get("category") || "").trim(),
+            categoryColor: String(data.get("categoryColor") || ""),
             date: String(data.get("date") || ""),
             time: String(data.get("time") || ""),
             location: String(data.get("location") || "").trim(),
@@ -350,6 +413,12 @@ export class EventViewElement extends HTMLElement {
             notes: String(data.get("notes") || "").trim()
         };
         const recurring = data.get("recurring") === "on";
+        const selected = this.getSelectedEvent(this.getEventList(this.viewModel.toObject().events));
+        const movingDate = event.date && !(existingEventId && selected?.event.recurrenceStart === event.date)
+            ? new Date(`${event.date}T00:00:00`) : undefined;
+        const destinationDay = movingDate ? EventViewElement.weekdays[movingDate.getDay()] : day;
+        if (movingDate) movingDate.setDate(movingDate.getDate() - movingDate.getDay());
+        const destinationWeek = movingDate ? EventViewElement.toDateId(movingDate) : weekid;
         const submitButton = form.querySelector("button[type='submit']") as HTMLButtonElement;
         const errorMessage = form.querySelector(".form-error") as HTMLParagraphElement;
 
@@ -358,7 +427,9 @@ export class EventViewElement extends HTMLElement {
 
         const callbacks = {
             onSuccess: () => {
-                window.location.href = `/app/event?week=${encodeURIComponent(weekid)}&event=${encodeURIComponent(event.id || event.title)}`;
+                BrowserHistory.dispatch(this, "history/navigate", {
+                    href: `/app/event?week=${encodeURIComponent(destinationWeek)}&event=${encodeURIComponent(event.id || event.title)}`
+                });
             },
             onFailure: () => {
                 submitButton.disabled = false;
@@ -375,7 +446,7 @@ export class EventViewElement extends HTMLElement {
         } else {
             Store.dispatch(this, [
                 "events/create",
-                { weekid, day, recurring, event },
+                { weekid: destinationWeek, day: destinationDay, recurring, event },
                 callbacks
             ]);
         }
@@ -387,7 +458,10 @@ export class EventViewElement extends HTMLElement {
         const eventid = selected?.event.id;
         const weekid = this.getRequestedWeekId() || model.currentWeekId || model.events?.id;
 
-        if (!eventid || !weekid || !window.confirm(`Delete "${selected.event.title}"?`)) return;
+        const deletePrompt = selected?.event.recurrenceStart
+            ? `Delete all weekly occurrences of "${selected.event.title}"?`
+            : `Delete "${selected?.event.title}"?`;
+        if (!eventid || !weekid || !window.confirm(deletePrompt)) return;
 
         const deleteButton = this.shadowRoot?.querySelector(".delete-event-button") as HTMLButtonElement | null;
         const errorMessage = this.shadowRoot?.querySelector(".detail-error") as HTMLParagraphElement | null;
@@ -482,7 +556,7 @@ export class EventViewElement extends HTMLElement {
             <li>
                 <a class=${`event-list-item${selectedClass}`} href=${eventHref}>
                     <span>${event.event.title}</span>
-                    <small>${event.recurring ? "Recurring" : "One time"}</small>
+                    <small>${event.event.recurrenceStart ? "Weekly" : event.recurring ? "Recurring label" : "One time"}</small>
                 </a>
             </li>
         `;
@@ -702,6 +776,11 @@ export class EventViewElement extends HTMLElement {
             flex-direction: column;
             gap: var(--padding-tiny);
             font-weight: 700;
+        }
+
+        .event-form input[type="color"] {
+            height: 3rem;
+            cursor: pointer;
         }
 
         .event-form input,

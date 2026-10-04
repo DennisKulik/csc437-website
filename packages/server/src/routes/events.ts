@@ -3,6 +3,7 @@ import { Event as PlanningEvent, Events } from "../models";
 
 import EventsSvc from "../services/events-svc.ts";
 import { isRecord } from "../request-validation.ts";
+import { dateForDay } from "../recurrence.ts";
 
 const router = express.Router();
 const weekdays = new Set([
@@ -33,10 +34,19 @@ function isOptionalDate(value: unknown): boolean {
     );
 }
 
+function isWeekId(value: string): boolean {
+    return isDateId(value) && new Date(`${value}T00:00:00Z`).getUTCDay() === 0;
+}
+
 function isOptionalTime(value: unknown): boolean {
     return value === undefined || value === "" || (
         typeof value === "string" && /^([01]\d|2[0-3]):[0-5]\d$/.test(value)
     );
+}
+
+function isOptionalColor(value: unknown): boolean {
+    return value === undefined || value === "" ||
+        (typeof value === "string" && /^#[0-9a-f]{6}$/i.test(value));
 }
 
 function cleanOptional(value: unknown): string | undefined {
@@ -61,7 +71,7 @@ router.get("/:id", (req: Request, res: Response) => {
 
     const { id } = req.params;
 
-    if (Array.isArray(id) || !isDateId(id)) {
+    if (Array.isArray(id) || !isWeekId(id)) {
         res.status(400).send({ error: "Invalid week identifier." });
         return;
     }
@@ -89,7 +99,7 @@ router.post("/:id/events", (req: Request, res: Response) => {
 
     if (
         Array.isArray(id) ||
-        !isDateId(id) ||
+        !isWeekId(id) ||
         typeof day !== "string" ||
         !weekdays.has(day) ||
         typeof recurring !== "boolean" ||
@@ -101,6 +111,7 @@ router.post("/:id/events", (req: Request, res: Response) => {
         !event.title.trim() ||
         event.title.length > 100 ||
         !optionalString(event.category, 50) ||
+        !isOptionalColor(event.categoryColor) ||
         !isOptionalDate(event.date) ||
         !isOptionalTime(event.time) ||
         !optionalString(event.location, 120) ||
@@ -115,12 +126,18 @@ router.post("/:id/events", (req: Request, res: Response) => {
         id: event.id.trim(),
         title: event.title.trim(),
         category: cleanOptional(event.category),
+        categoryColor: cleanOptional(event.categoryColor),
         date: cleanOptional(event.date),
         time: cleanOptional(event.time),
         location: cleanOptional(event.location),
         description: cleanOptional(event.description),
         notes: cleanOptional(event.notes)
     };
+
+    if (recurring && newEvent.date && newEvent.date !== dateForDay(id, day)) {
+        res.status(400).send({ error: "A weekly event must start on its selected weekday." });
+        return;
+    }
 
     EventsSvc.addEvent(id, day, recurring, newEvent, userid)
         .then((events: Events) => res.status(201).json(events))
@@ -149,7 +166,7 @@ router.put("/:id/events/:eventid", (req: Request, res: Response) => {
     if (
         Array.isArray(id) ||
         Array.isArray(eventid) ||
-        !isDateId(id) ||
+        !isWeekId(id) ||
         !eventid ||
         eventid.length > 100 ||
         !isRecord(event) ||
@@ -157,6 +174,7 @@ router.put("/:id/events/:eventid", (req: Request, res: Response) => {
         !event.title.trim() ||
         event.title.length > 100 ||
         !optionalString(event.category, 50) ||
+        !isOptionalColor(event.categoryColor) ||
         !isOptionalDate(event.date) ||
         !isOptionalTime(event.time) ||
         !optionalString(event.location, 120) ||
@@ -171,6 +189,7 @@ router.put("/:id/events/:eventid", (req: Request, res: Response) => {
         id: eventid,
         title: event.title.trim(),
         category: cleanOptional(event.category),
+        categoryColor: cleanOptional(event.categoryColor),
         date: cleanOptional(event.date),
         time: cleanOptional(event.time),
         location: cleanOptional(event.location),
@@ -195,7 +214,7 @@ router.delete("/:id/events/:eventid", (req: Request, res: Response) => {
     if (
         Array.isArray(id) ||
         Array.isArray(eventid) ||
-        !isDateId(id) ||
+        !isWeekId(id) ||
         !eventid ||
         eventid.length > 100
     ) {

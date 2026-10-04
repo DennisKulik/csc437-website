@@ -16,9 +16,11 @@ export interface Event {
     title: string;
     href?: string;
     category?: string;
+    categoryColor?: string;
     date?: string;
     time?: string;
     location?: string;
     description?: string;
     notes?: string;
+    recurrenceStart?: string;
 }

@@ -5,11 +5,14 @@ import { Store, fromStore } from "@unbndl/store";
 import type { Model } from "../model.ts";
 import reset from "../styles/reset.css.js";
 import button from "../styles/button.css.ts";
+import { categoryColor } from "../categories.ts";
 
 type EventCard = {
     id?: string;
     title: string;
     href: string;
+    category?: string;
+    categoryColor?: string;
 };
 
 type Weekday = {
@@ -17,6 +20,8 @@ type Weekday = {
     oneTimeEvents: EventCard[];
     recurringEvents: EventCard[];
 };
+
+type EventsViewModel = Model & { categoryFilter: string };
 
 export class MomentumEventsHolder extends HTMLElement {
     static weekdays = [
@@ -29,7 +34,8 @@ export class MomentumEventsHolder extends HTMLElement {
         "Saturday"
     ];
 
-    viewModel = createViewModel<Model>({
+    viewModel = createViewModel<EventsViewModel>({
+        categoryFilter: "",
         eventsStatus: "idle",
         userStatus: "idle"
     })
@@ -41,7 +47,7 @@ export class MomentumEventsHolder extends HTMLElement {
             "currentWeekId"
         );
 
-    view: Template<[Model]> = html`
+    view: Template<[EventsViewModel]> = html`
         <div class="events-holder">
             <div class="section-header">
                 <h2>Events</h2>
@@ -54,7 +60,12 @@ export class MomentumEventsHolder extends HTMLElement {
                             )}
                     </span>
                     <button type="button" class="button hover-lift next-week-button">Next</button>
+                    <button type="button" class="button hover-lift current-week-button">This Week</button>
                 </div>
+            </div>
+
+            <div class="category-controls">
+                ${($) => this.renderCategoryFilter($)}
             </div>
 
             <div class="weekday-list">
@@ -73,6 +84,17 @@ export class MomentumEventsHolder extends HTMLElement {
             })
             .delegate(".next-week-button", {
                 click: () => Store.dispatch(this, ["events/week-next", {}])
+            })
+            .delegate(".current-week-button", {
+                click: () => Store.dispatch(this, ["events/week-current", {}])
+            })
+            .listen({
+                change: (event: Event) => {
+                    const select = event.target as HTMLSelectElement;
+                    if (select.name === "categoryFilter") {
+                        this.viewModel.update({ categoryFilter: select.value });
+                    }
+                }
             })
             .delegate(".retry-events-button", {
                 click: () => this.requestCurrentWeek()
@@ -94,7 +116,27 @@ export class MomentumEventsHolder extends HTMLElement {
         Store.dispatch(this, ["events/request", { weekid }]);
     }
 
-    renderWeekState(model: Model) {
+    renderCategoryFilter(model: EventsViewModel) {
+        const names = new Set<string>();
+        for (const day of model.events?.weekdays || []) {
+            for (const event of [...day.oneTimeEvents, ...day.recurringEvents]) {
+                names.add(event.category || "Uncategorized");
+            }
+        }
+        if (model.categoryFilter) names.add(model.categoryFilter);
+        const control = html`
+            <label>Category
+                <select name="categoryFilter">
+                    <option value="">All categories</option>
+                    ${Array.from(names).sort().map((name) => html`<option value=${name}>${name}</option>`)}
+                </select>
+            </label>
+        `;
+        control.querySelector<HTMLSelectElement>("select")!.value = model.categoryFilter;
+        return control;
+    }
+
+    renderWeekState(model: EventsViewModel) {
         if (model.eventsStatus === "idle" || model.eventsStatus === "loading") {
             return html`
                 <div class="week-state" role="status" aria-live="polite">
@@ -115,7 +157,12 @@ export class MomentumEventsHolder extends HTMLElement {
         }
 
         const weekid = model.currentWeekId || model.events?.id || MomentumEventsHolder.getCurrentWeekId();
-        const weekdays = MomentumEventsHolder.getWeekdays(model.events?.weekdays as Weekday[] | undefined);
+        const weekdays = MomentumEventsHolder.getWeekdays(model.events?.weekdays as Weekday[] | undefined)
+            .map((day) => ({
+                ...day,
+                oneTimeEvents: day.oneTimeEvents.filter((event) => !model.categoryFilter || (event.category || "Uncategorized") === model.categoryFilter),
+                recurringEvents: day.recurringEvents.filter((event) => !model.categoryFilter || (event.category || "Uncategorized") === model.categoryFilter)
+            }));
         const eventCount = weekdays.reduce(
             (total, weekday) => total + weekday.oneTimeEvents.length + weekday.recurringEvents.length,
             0
@@ -124,7 +171,9 @@ export class MomentumEventsHolder extends HTMLElement {
         return html`
             ${eventCount === 0 ? html`
                 <p class="empty-week" role="status">
-                    Nothing is scheduled for this week yet. Add an event to any day below.
+                    ${model.categoryFilter
+                        ? "No events in this week match the selected category."
+                        : "Nothing is scheduled for this week yet. Add an event to any day below."}
                 </p>
             ` : ""}
             ${weekdays.map((weekday) => MomentumEventsHolder.renderWeekday(weekday, weekid))}
@@ -156,7 +205,7 @@ export class MomentumEventsHolder extends HTMLElement {
 
         return html`
             <li slot=${slotName}>
-                <momentum-event-card href=${eventHref}>
+                <momentum-event-card href=${eventHref} category=${event.category || ""} category-color=${categoryColor(event.category, event.categoryColor)}>
                     ${title}
                 </momentum-event-card>
             </li>
@@ -188,8 +237,10 @@ export class MomentumEventsHolder extends HTMLElement {
             <momentum-weekday-section day=${day} week=${weekid}>
                 <span slot="day">${day}</span>
 
-                ${oneTimeEvents.map((event) => this.renderEvent(event, "one-time-events", weekid))}
-                ${recurringEvents.map((event) => this.renderEvent(event, "recurring-events", weekid))}
+                ${[
+                    ...oneTimeEvents.map((event) => this.renderEvent(event, "one-time-events", weekid)),
+                    ...recurringEvents.map((event) => this.renderEvent(event, "recurring-events", weekid))
+                ]}
             </momentum-weekday-section>
         `;
     }
@@ -229,8 +280,40 @@ export class MomentumEventsHolder extends HTMLElement {
             color: var(--text-primary);
         }
 
+        .section-header,
+        .week-controls {
+            flex-wrap: wrap;
+            gap: var(--padding-mini);
+        }
+
+        .week-controls {
+            display: flex;
+            align-items: center;
+        }
+
         .section-meta {
             color: var(--text-primary);
+        }
+
+        .category-controls {
+            margin-bottom: var(--padding-small);
+            color: var(--text-primary);
+        }
+
+        .category-controls label {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: var(--padding-mini);
+        }
+
+        select {
+            padding: var(--padding-mini);
+            border: 2px solid var(--color-accent-dark);
+            border-radius: var(--padding-mini);
+            color: var(--text-primary);
+            background: var(--color-secondary);
+            font: inherit;
         }
 
         .weekday-list {

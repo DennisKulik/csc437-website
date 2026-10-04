@@ -6,7 +6,11 @@ The application uses a TypeScript front end built with Vite and Web Components, 
 
 ## Current status
 
-The application currently supports account registration and login, editable user profiles, and authenticated weekly event data. Users can create, view, edit, and delete events, and classify them as one-time or recurring within the selected week. The earlier task workflow is being held outside the active interface until it has the same level of persistence and interaction. A public demo and visual project walkthrough will be added after the remaining portfolio-readiness work is complete.
+The application currently supports account registration and login, editable user profiles, and authenticated weekly event data. Users can create, view, edit, and delete one-time events or weekly recurring series. Weekly events appear on the same weekday from their start date onward; editing or deleting applies to the entire series. The earlier task workflow is being held outside the active interface until it has the same level of persistence and interaction. A public demo and visual project walkthrough will be added after the remaining portfolio-readiness work is complete.
+
+Events can be moved to another day or week by editing their date. Changing a weekly series' start date moves the entire series, not just one occurrence. Categories support preset or custom names, a color accent on event cards, and filtering the selected week. The This Week button returns the planner to the current week.
+
+Recurrence currently supports weekly repetition without an end date. Individual-occurrence exceptions and other repeat intervals are not implemented. Older events saved under the previous recurring label remain limited to their original week.
 
 ## Technology
 
@@ -93,8 +97,8 @@ Run these commands from the repository root:
 | `npm test` | Run fast server validation and configuration tests |
 | `npm run test:integration` | Run the temporary-record Atlas integration test |
 
-The integration test requires the configured `.env` file. It starts the API on a test port, exercises registration, profile ownership, and event persistence, then removes its uniquely named credential, profile, and event records.
+The integration test requires the configured `.env` file. It starts the API on a test port, exercises registration, profile ownership, event persistence, and recurring series across weeks, then removes its uniquely named credential, profile, and event records.
 
 ## Deployment
 
-The intended production arrangement is one Node web service that serves both the compiled Vite application and the Express API, backed by MongoDB Atlas. See the [deployment plan](docs/DEPLOYMENT.md) for the exact Render settings, environment variables, Atlas network configuration, and verification checklist.
+The intended production arrangement is one Node web service that serves both the compiled Vite application and the Express API, backed by MongoDB Atlas. Generated `dist` directories are not committed; run `npm ci` and `npm run build` to produce them on a new machine or during deployment.

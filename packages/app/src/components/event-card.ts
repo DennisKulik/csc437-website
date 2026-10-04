@@ -10,11 +10,12 @@ export class MomentumEventCard extends HTMLElement {
         <template>
             <a class="card event-card hover-lift card-layout">
                 <slot>Event Name</slot>
+                <small class="category-name"></small>
             </a>
         </template>
     `;
 
-    static observedAttributes = ["href"];
+    static observedAttributes = ["href", "category", "category-color"];
 
     constructor() {
         super();
@@ -31,11 +32,28 @@ export class MomentumEventCard extends HTMLElement {
                 link.href = newValue;
             }
         }
+        if (name === "category") {
+            const label = this.shadowRoot?.querySelector(".category-name");
+            if (label) label.textContent = newValue || "";
+        }
+        if (name === "category-color" && newValue && /^#[0-9a-f]{6}$/i.test(newValue)) {
+            this.style.setProperty("--event-category-color", newValue);
+        }
     }
 
     static styles = css`
         .event-card {
             background-color: var(--color-tertiary);
+            border-left: 4px solid var(--event-category-color, var(--solarized-cyan));
+            grid-template-columns: minmax(0, 1fr) auto;
+        }
+
+        .category-name {
+            font-size: 0.8em;
+        }
+
+        .category-name:empty {
+            display: none;
         }
 
         a {

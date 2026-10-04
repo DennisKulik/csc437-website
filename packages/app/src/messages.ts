@@ -39,6 +39,7 @@ export type Msg =
     ]
     | ["events/week-next", {}]
     | ["events/week-prev", {}]
+    | ["events/week-current", {}]
     | ["user/request", {}]
     | ["user/load", { user: UserProfile }]
     | [

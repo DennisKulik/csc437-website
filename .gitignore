@@ -1,5 +1,7 @@
 node_modules/
+dist/
 assets/
 .env
 .DS_Store
 docs/PROJECT_HISTORY.md
+docs/DEPLOYMENT.md
